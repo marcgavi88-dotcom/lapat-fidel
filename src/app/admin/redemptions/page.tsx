@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n/provider";
 
 interface Canje {
   id: string;
+  user_id: string;
   codigo_canje: string;
   estado: string;
   puntos_usados: number;
@@ -18,6 +19,7 @@ export default function AdminRedemptionsPage() {
   const { t } = useI18n();
   const [canjes, setCanjes] = useState<Canje[]>([]);
   const [filtro, setFiltro] = useState<"pendiente" | "validado" | "rechazado" | "todos">("pendiente");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     cargar();
@@ -25,10 +27,21 @@ export default function AdminRedemptionsPage() {
 
   const cargar = async () => {
     const supa = createSupabaseBrowser();
-    const { data } = await supa
+    // IMPORTANT: canjes té dos FK a profiles (user_id i validado_por),
+    // per això cal especificar explícitament "profiles!canjes_user_id_fkey"
+    const { data, error } = await supa
       .from("canjes")
-      .select("*, premios(nombre_es, nombre_ca), profiles(nombre, apellidos, email)")
+      .select(
+        "id, user_id, codigo_canje, estado, puntos_usados, created_at, premios(nombre_es, nombre_ca), profiles!canjes_user_id_fkey(nombre, apellidos, email)"
+      )
       .order("created_at", { ascending: false });
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error carregant canjes:", error);
+      setLoadError(error.message);
+      return;
+    }
+    setLoadError(null);
     if (data) setCanjes(data as unknown as Canje[]);
   };
 
@@ -47,16 +60,15 @@ export default function AdminRedemptionsPage() {
     // Si se rechaza, devolver los puntos
     if (estado === "rechazado") {
       const c = canjes.find((x) => x.id === id);
-      if (c && c.profiles) {
-        // Usar el RPC o simplemente actualizar el perfil
-        const { data: prof } = await supa.from("profiles").select("puntos_total").eq("id", (c as any).user_id).single();
+      if (c && c.user_id) {
+        const { data: prof } = await supa.from("profiles").select("puntos_total").eq("id", c.user_id).single();
         if (prof) {
           await supa
             .from("profiles")
             .update({ puntos_total: prof.puntos_total + c.puntos_usados })
-            .eq("id", (c as any).user_id);
+            .eq("id", c.user_id);
           await supa.from("movimientos_puntos").insert({
-            user_id: (c as any).user_id,
+            user_id: c.user_id,
             puntos: c.puntos_usados,
             tipo: "ajuste_admin",
             descripcion: `Devolución por canje rechazado: ${c.codigo_canje}`,
@@ -72,6 +84,12 @@ export default function AdminRedemptionsPage() {
   return (
     <div className="space-y-6">
       <h1 className="serif text-3xl text-terracota-800">{t.admin.redemptions}</h1>
+
+      {loadError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+          Error carregant canjes: {loadError}
+        </div>
+      )}
 
       <div className="flex gap-2">
         {[
