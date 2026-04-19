@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..800&family=DM+Sans:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #fdfaf3;
+  --color-ink: #2a1f1a;
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.serif { font-family: "Fraunces", Georgia, serif; }
+
+/* Botón primario cálido */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-terracota-600 px-6 py-3 font-medium text-white transition hover:bg-terracota-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-terracota-600 px-6 py-3 font-medium text-terracota-700 transition hover:bg-terracota-50 active:scale-[0.98];
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 font-medium text-oliva-700 hover:bg-oliva-50 transition;
+}
+
+.input-field {
+  @apply w-full rounded-lg border border-oliva-200 bg-white px-4 py-3 text-base outline-none transition focus:border-terracota-500 focus:ring-2 focus:ring-terracota-200;
+}
+
+.card {
+  @apply rounded-2xl border border-crema-200 bg-white p-6 shadow-sm;
+}
+
+/* ===== Estilos específicos para impresión del ticket térmico ===== */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #ticket-print, #ticket-print * {
+    visibility: visible;
+  }
+
+  #ticket-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    padding: 3mm;
+    font-family: "Courier New", monospace;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Ticket preview en pantalla (antes de imprimir) */
+.ticket-preview {
+  width: 80mm;
+  min-height: 130mm;
+  background: white;
+  color: black;
+  padding: 3mm;
+  font-family: "Courier New", monospace;
+  font-size: 11pt;
+  line-height: 1.3;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Animación ruleta */
+@keyframes spin-roulette {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(var(--final-rotation)); }
+}
+
+.spinning {
+  animation: spin-roulette 4s cubic-bezier(0.17, 0.67, 0.32, 0.98) forwards;
+}
+
+/* Patrón decorativo mediterráneo */
+.mediterranean-pattern {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(201, 95, 51, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(120, 145, 71, 0.05) 0%, transparent 40%);
+}
