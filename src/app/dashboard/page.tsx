@@ -62,10 +62,6 @@ export default function DashboardPage() {
   }
   if (!profile) return null;
 
-  // Tarjeta de sellos: 10 sellos = 250 puntos (25 por menú)
-  const sellosCompletos = Math.min(10, Math.floor(profile.puntos_menu / 25));
-  const progresoMenu = profile.puntos_menu % 250;
-
   // Ruleta: comprueba si ya giró este mes
   const puedeGirar = !profile.ultimo_giro_ruleta ||
     new Date(profile.ultimo_giro_ruleta).getMonth() !== new Date().getMonth() ||
@@ -103,46 +99,6 @@ export default function DashboardPage() {
             <Link href="/roulette" className="inline-flex items-center gap-1 rounded-full border border-white/40 px-4 py-2 text-sm font-medium text-white hover:bg-white/10">
               🎡 {t.dashboard.monthlyRoulette}
             </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Tarjeta de sellos (menú del día) */}
-      <div className="card">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="serif text-xl text-terracota-800">{t.dashboard.menuCard}</h2>
-          <span className="text-sm text-oliva-600">{progresoMenu}/250</span>
-        </div>
-        <p className="mb-4 text-sm text-oliva-700">{t.dashboard.menuCardDesc}</p>
-
-        <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
-          {Array.from({ length: 10 }).map((_, i) => {
-            const isFull = i < sellosCompletos;
-            const isLast = i === 9;
-            return (
-              <div
-                key={i}
-                className={`relative flex aspect-square items-center justify-center rounded-full border-2 text-sm font-semibold transition ${
-                  isFull
-                    ? isLast
-                      ? "border-terracota-600 bg-terracota-600 text-white"
-                      : "border-oliva-500 bg-oliva-500 text-white"
-                    : "border-dashed border-oliva-300 bg-crema-50 text-oliva-400"
-                }`}
-              >
-                {isLast ? "🎁" : isFull ? "✓" : i + 1}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Barra progreso hasta próximo sello */}
-        <div className="mt-4">
-          <div className="h-2 overflow-hidden rounded-full bg-oliva-100">
-            <div
-              className="h-full bg-terracota-500 transition-all"
-              style={{ width: `${(progresoMenu / 250) * 100}%` }}
-            />
           </div>
         </div>
       </div>
@@ -198,11 +154,13 @@ export default function DashboardPage() {
 function getSiguientePremio(puntos: number, lang: string) {
   const premios = [
     { p: 125, ca: "Cafè gratis", es: "Café gratis" },
+    { p: 150, ca: "Copa de vi o canya", es: "Copa de vino o caña" },
     { p: 200, ca: "Postres gratis", es: "Postre gratis" },
     { p: 500, ca: "Menú de migdia gratis", es: "Menú de mediodía gratis" },
+    { p: 750, ca: "Ampolla de vi de la casa", es: "Botella de vino de la casa" },
     { p: 1000, ca: "Arròs per a 2", es: "Arroz para 2" },
     { p: 2000, ca: "Sopar per a 2", es: "Cena para 2" },
-    { p: 2500, ca: "Ganivet de cuina", es: "Cuchillo de cocina" },
+    { p: 3000, ca: "Ganivet de cuina", es: "Cuchillo de cocina" },
   ];
   for (const pr of premios) {
     if (puntos < pr.p) {
