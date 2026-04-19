@@ -211,6 +211,14 @@ export const ca = {
     iosStep2: "Desplaça i tria 'Afegeix a pantalla d'inici'",
     iosStep3: "Toca 'Afegir' i llest! Trobaràs la icona a la teva pantalla.",
     iosGotIt: "Entesos",
+    iosOpenInSafari: "Aquest navegador no permet instal·lar l'app. Obre aquesta pàgina amb Safari (el navegador d'Apple) i hi veuràs les instruccions per afegir-la a la pantalla d'inici.",
+    androidTitle: "Com instal·lar-la a Android",
+    androidStep1: "Toca el botó ⋮ (tres punts) a dalt a la dreta del navegador",
+    androidStep2: "Tria 'Instal·lar app' o 'Afegir a pantalla d'inici'",
+    androidStep3: "Confirma i trobaràs la icona a la teva pantalla.",
+    desktopTitle: "Com instal·lar-la a l'ordinador",
+    desktopStep1: "Fes clic a la icona d'instal·lació ⊕ de la barra de direccions (o menú ⋮ → 'Instal·lar L'Àpat Fidel')",
+    desktopStep2: "Confirma la instal·lació i l'app quedarà a l'escriptori.",
   },
 
   common: {
