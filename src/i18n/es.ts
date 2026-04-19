@@ -188,6 +188,18 @@ export const es: Translations = {
     statsQrGenerated: "QR generados",
   },
 
+  install: {
+    title: "Instala L'Àpat Fidel en la pantalla de inicio",
+    subtitle: "Abre la app más rápido y recibe avisos de promociones. Ocupa muy poco espacio.",
+    cta: "Instalar app",
+    later: "Más tarde",
+    iosTitle: "Cómo instalarla en el iPhone",
+    iosStep1: "Toca el botón Compartir en la barra de Safari",
+    iosStep2: "Desplázate y elige 'Añadir a pantalla de inicio'",
+    iosStep3: "Toca 'Añadir' y ¡listo! Encontrarás el icono en tu pantalla.",
+    iosGotIt: "Entendido",
+  },
+
   common: {
     save: "Guardar",
     cancel: "Cancelar",

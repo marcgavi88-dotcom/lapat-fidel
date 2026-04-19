@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n, tpl } from "@/i18n/provider";
+import InstallPWA from "@/components/InstallPWA";
 
 interface Profile {
   id: string;
@@ -187,6 +188,9 @@ export default function DashboardPage() {
           </ul>
         )}
       </div>
+
+      {/* Banner per instal·lar com a PWA (només si no ho està ja) */}
+      <InstallPWA />
     </div>
   );
 }

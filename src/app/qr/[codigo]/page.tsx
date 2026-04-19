@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n, tpl } from "@/i18n/provider";
+import InstallPWA from "@/components/InstallPWA";
 
 interface QrInfo {
   codigo: string;
@@ -95,6 +96,8 @@ export default function QrLanding() {
           <Link href="/dashboard" className="btn-primary">
             {t.nav.dashboard}
           </Link>
+          {/* Aprofitem el moment d'alegria per oferir la instal·lació */}
+          <InstallPWA />
         </div>
       </div>
     );
@@ -164,6 +167,9 @@ export default function QrLanding() {
           </>
         )}
       </div>
+
+      {/* Banner per instal·lar com a PWA */}
+      <InstallPWA />
 
       {/* Pasos visuales */}
       <div className="mt-8 rounded-2xl border border-crema-200 bg-white p-5">
