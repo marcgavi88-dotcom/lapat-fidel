@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Component, ReactNode, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
@@ -11,21 +11,143 @@ const READER_ID = "qr-reader-container";
 function extractCodigo(raw: string): string | null {
   if (!raw) return null;
   const trimmed = raw.trim();
-  // 1) Si es una URL con /qr/XYZ en la ruta
   try {
     const u = new URL(trimmed);
     const parts = u.pathname.split("/").filter(Boolean);
     const qrIdx = parts.indexOf("qr");
     if (qrIdx >= 0 && parts[qrIdx + 1]) return parts[qrIdx + 1];
   } catch {
-    // no es URL válida
+    // no és URL vàlida
   }
-  // 2) Código "pelado" alfanumérico
   if (/^[A-Za-z0-9_-]{4,40}$/.test(trimmed)) return trimmed;
   return null;
 }
 
-export default function QrScannerClient() {
+// ────────────────────────────────────────────────────────────────────
+// Error boundary: si el visor de càmera peta, l'usuari NO veu la
+// pantalla blanca de Next, sinó un missatge amb codi manual.
+// ────────────────────────────────────────────────────────────────────
+class ScannerErrorBoundary extends Component<
+  { children: ReactNode; fallback: (err: string) => ReactNode },
+  { error: string | null }
+> {
+  state = { error: null as string | null };
+  static getDerivedStateFromError(err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { error: msg };
+  }
+  componentDidCatch(err: unknown) {
+    // eslint-disable-next-line no-console
+    console.error("Scanner error boundary caught:", err);
+  }
+  render() {
+    if (this.state.error) return this.props.fallback(this.state.error);
+    return this.props.children;
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Visor de càmera (només muntat quan stage="ready")
+// ────────────────────────────────────────────────────────────────────
+function CameraViewer({
+  onDecoded,
+  onError,
+}: {
+  onDecoded: (codigo: string) => void;
+  onError: (key: string) => void;
+}) {
+  const decodedRef = useRef(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let inst: any = null;
+
+    (async () => {
+      try {
+        if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+          onError("camera");
+          return;
+        }
+
+        let mod: unknown;
+        try {
+          mod = await import("html5-qrcode");
+        } catch {
+          onError("library");
+          return;
+        }
+        if (cancelled) return;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const Ctor: any = (mod as any)?.Html5Qrcode;
+        if (typeof Ctor !== "function") {
+          onError("library");
+          return;
+        }
+
+        const div = document.getElementById(READER_ID);
+        if (!div) {
+          onError("start");
+          return;
+        }
+
+        try {
+          inst = new Ctor(READER_ID, false);
+        } catch {
+          onError("start");
+          return;
+        }
+
+        try {
+          await inst.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 240, height: 240 } },
+            (decodedText: string) => {
+              if (decodedRef.current) return;
+              const codigo = extractCodigo(decodedText);
+              if (!codigo) return; // ignorem QR no vàlids, continuem escanejant
+              decodedRef.current = true;
+              try {
+                Promise.resolve(inst?.stop?.()).catch(() => undefined).finally(() => onDecoded(codigo));
+              } catch {
+                onDecoded(codigo);
+              }
+            },
+            () => {
+              /* frames sense QR: ignorar */
+            }
+          );
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (/Permission|NotAllowed/i.test(msg)) onError("permission");
+          else if (/NotFound|NotReadable|OverconstrainedError|SecurityError/i.test(msg)) onError("camera");
+          else onError("start");
+        }
+      } catch {
+        onError("start");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      try {
+        if (inst?.stop) {
+          Promise.resolve(inst.stop()).catch(() => undefined);
+        }
+      } catch {
+        // ignorar
+      }
+    };
+  }, [onDecoded, onError]);
+
+  return <div id={READER_ID} className="aspect-square w-full" />;
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Component principal
+// ────────────────────────────────────────────────────────────────────
+function ScannerInner() {
   const router = useRouter();
   const { t } = useI18n();
 
@@ -33,10 +155,6 @@ export default function QrScannerClient() {
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState("");
 
-  const decodedRef = useRef(false);
-  const scannerRef = useRef<{ stop?: () => Promise<void>; clear?: () => void } | null>(null);
-
-  // 1) Check de sesión
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -60,91 +178,13 @@ export default function QrScannerClient() {
     };
   }, [router]);
 
-  // 2) Arrancar escáner cuando ready
-  useEffect(() => {
-    if (stage !== "ready") return;
+  const handleDecoded = (codigo: string) => {
+    router.push(`/qr/${codigo}`);
+  };
 
-    let stopped = false;
-    let instance: unknown = null;
-
-    (async () => {
-      try {
-        const mod = await import("html5-qrcode").catch(() => null);
-        if (!mod || !("Html5Qrcode" in mod)) {
-          setStage("error");
-          setErrorKey("library");
-          return;
-        }
-        if (stopped) return;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const Ctor: any = (mod as any).Html5Qrcode;
-        const div = document.getElementById(READER_ID);
-        if (!div) return;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const inst: any = new Ctor(READER_ID, /* verbose */ false);
-        instance = inst;
-        scannerRef.current = inst;
-
-        await inst.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 240, height: 240 } },
-          (decodedText: string) => {
-            if (decodedRef.current) return;
-            const codigo = extractCodigo(decodedText);
-            if (!codigo) {
-              setErrorKey("invalid_qr");
-              return;
-            }
-            decodedRef.current = true;
-            // Parar la cámara antes de navegar
-            Promise.resolve(inst.stop?.())
-              .catch(() => undefined)
-              .finally(() => router.push(`/qr/${codigo}`));
-          },
-          () => {
-            /* frames sin QR: ignorar */
-          }
-        );
-
-        if (stopped) {
-          try {
-            await inst.stop();
-          } catch {
-            // ignorar
-          }
-        }
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : String(e);
-        if (/Permission|NotAllowed/i.test(msg)) {
-          setErrorKey("permission");
-        } else if (/NotFound|NotReadable|OverconstrainedError/i.test(msg)) {
-          setErrorKey("camera");
-        } else {
-          setErrorKey("start");
-        }
-        setStage("error");
-      }
-    })();
-
-    return () => {
-      stopped = true;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const inst: any = instance;
-      if (inst) {
-        Promise.resolve(inst.stop?.())
-          .catch(() => undefined)
-          .finally(() => {
-            try {
-              inst.clear?.();
-            } catch {
-              // ignorar
-            }
-          });
-      }
-    };
-  }, [stage, router]);
+  const handleError = (key: string) => {
+    setErrorKey(key);
+  };
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,7 +226,11 @@ export default function QrScannerClient() {
       </div>
 
       <div className="relative overflow-hidden rounded-3xl bg-black shadow-lg">
-        <div id={READER_ID} className="aspect-square w-full" />
+        {stage === "ready" && !errorKey ? (
+          <CameraViewer onDecoded={handleDecoded} onError={handleError} />
+        ) : (
+          <div id={READER_ID} className="aspect-square w-full" />
+        )}
 
         {stage === "ready" && !errorKey && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -245,5 +289,63 @@ export default function QrScannerClient() {
         </Link>
       </div>
     </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Fallback quan el boundary captura un error
+// ────────────────────────────────────────────────────────────────────
+function FallbackUI({ message }: { message: string }) {
+  const { t } = useI18n();
+  const router = useRouter();
+  const [manualCode, setManualCode] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const codigo = extractCodigo(manualCode);
+    if (!codigo) {
+      setLocalError(t.scan.errorInvalidCode);
+      return;
+    }
+    router.push(`/qr/${codigo}`);
+  };
+
+  return (
+    <div className="mx-auto max-w-md py-6">
+      <div className="rounded-2xl border-2 border-terracota-200 bg-crema-50 p-6 text-center">
+        <div className="text-5xl">📷</div>
+        <h2 className="serif mt-3 text-xl text-terracota-800">{t.scan.errorCamera}</h2>
+        <p className="mt-2 text-xs text-oliva-600 break-words">{message}</p>
+        <p className="mt-4 text-sm text-oliva-700">{t.scan.manualTitle}</p>
+        <form onSubmit={handleManualSubmit} className="mt-3 space-y-2">
+          <input
+            type="text"
+            value={manualCode}
+            onChange={(e) => setManualCode(e.target.value)}
+            placeholder={t.scan.manualPlaceholder}
+            className="input-field w-full"
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+          />
+          {localError && <p className="text-xs text-terracota-700">{localError}</p>}
+          <button type="submit" className="btn-primary w-full">
+            OK
+          </button>
+        </form>
+        <Link href="/dashboard" className="mt-4 inline-block text-sm text-oliva-600 underline">
+          {t.common.back}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default function QrScannerClient() {
+  return (
+    <ScannerErrorBoundary fallback={(msg) => <FallbackUI message={msg} />}>
+      <ScannerInner />
+    </ScannerErrorBoundary>
   );
 }
