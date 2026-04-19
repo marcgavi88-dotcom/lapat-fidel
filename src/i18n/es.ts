@@ -11,10 +11,28 @@ export const es: Translations = {
     rewards: "Premios",
     roulette: "Ruleta mensual",
     news: "Noticias",
+    scan: "Escanear QR",
     login: "Iniciar sesión",
     register: "Registrarse",
     logout: "Cerrar sesión",
     admin: "Administración",
+  },
+
+  scan: {
+    title: "Escanea tu ticket",
+    subtitle: "Apunta la cámara al QR del ticket para sumar puntos",
+    instructionsTitle: "Cómo hacerlo",
+    instructionsBody: "Coloca el QR dentro del recuadro. Se leerá automáticamente.",
+    torchOn: "Encender linterna",
+    torchOff: "Apagar linterna",
+    manualTitle: "O introduce el código manualmente",
+    manualPlaceholder: "Ej: 7K2Q9P",
+    manualHint: "El código está debajo del QR del ticket.",
+    tryAgain: "Volver a intentar",
+    errorPermission: "No se ha concedido permiso para la cámara. Revisa los permisos del navegador e inténtalo de nuevo.",
+    errorCamera: "No se ha podido abrir la cámara de este dispositivo.",
+    errorInvalidQr: "Este QR no es válido para L'Àpat Fidel.",
+    errorInvalidCode: "El código introducido no es válido.",
   },
 
   home: {

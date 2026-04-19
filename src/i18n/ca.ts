@@ -10,10 +10,29 @@ export const ca = {
     rewards: "Premis",
     roulette: "Ruleta mensual",
     news: "Notícies",
+    scan: "Escanejar QR",
     login: "Iniciar sessió",
     register: "Registrar-se",
     logout: "Tancar sessió",
     admin: "Administració",
+  },
+
+  // Scan QR
+  scan: {
+    title: "Escaneja el teu tiquet",
+    subtitle: "Apunta la càmera al QR del tiquet per sumar punts",
+    instructionsTitle: "Com fer-ho",
+    instructionsBody: "Col·loca el QR dins del quadre. Es llegirà automàticament.",
+    torchOn: "Encendre llanterna",
+    torchOff: "Apagar llanterna",
+    manualTitle: "O introdueix el codi manualment",
+    manualPlaceholder: "Ex: 7K2Q9P",
+    manualHint: "El codi és a sota del QR del tiquet.",
+    tryAgain: "Tornar a intentar",
+    errorPermission: "No s'ha concedit permís per a la càmera. Comprova els permisos del navegador i torna-ho a provar.",
+    errorCamera: "No s'ha pogut obrir la càmera d'aquest dispositiu.",
+    errorInvalidQr: "Aquest QR no és vàlid per a L'Àpat Fidel.",
+    errorInvalidCode: "El codi introduït no és vàlid.",
   },
 
   // Inicio

@@ -198,9 +198,20 @@ drop policy if exists "users_update_own_profile" on public.profiles;
 create policy "users_update_own_profile" on public.profiles
   for update using (auth.uid() = id);
 
+-- Funció helper SECURITY DEFINER per evitar recursió infinita a les polítiques d'admin
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $func$
+  select coalesce((select is_admin from public.profiles where id = auth.uid()), false);
+$func$;
+
 drop policy if exists "admins_select_all_profiles" on public.profiles;
 create policy "admins_select_all_profiles" on public.profiles
-  for select using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for select using (public.is_admin());
 
 -- MOVIMIENTOS: cada usuario ve los suyos
 drop policy if exists "users_select_own_movimientos" on public.movimientos_puntos;
@@ -209,7 +220,7 @@ create policy "users_select_own_movimientos" on public.movimientos_puntos
 
 drop policy if exists "admins_all_movimientos" on public.movimientos_puntos;
 create policy "admins_all_movimientos" on public.movimientos_puntos
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- PREMIOS: todos los usuarios autenticados los ven
 drop policy if exists "everyone_select_premios" on public.premios;
@@ -218,7 +229,7 @@ create policy "everyone_select_premios" on public.premios
 
 drop policy if exists "admins_all_premios" on public.premios;
 create policy "admins_all_premios" on public.premios
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- CANJES: cada usuario ve los suyos, admin ve todos
 drop policy if exists "users_select_own_canjes" on public.canjes;
@@ -231,7 +242,7 @@ create policy "users_insert_own_canjes" on public.canjes
 
 drop policy if exists "admins_all_canjes" on public.canjes;
 create policy "admins_all_canjes" on public.canjes
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- NOTICIAS: todos ven las publicadas
 drop policy if exists "everyone_select_noticias" on public.noticias;
@@ -240,17 +251,17 @@ create policy "everyone_select_noticias" on public.noticias
 
 drop policy if exists "admins_all_noticias" on public.noticias;
 create policy "admins_all_noticias" on public.noticias
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- QR CODES: solo admin, el cliente no los lista directamente (se procesan por API con service role)
 drop policy if exists "admins_all_qr" on public.qr_codes;
 create policy "admins_all_qr" on public.qr_codes
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- NEWSLETTERS: solo admin
 drop policy if exists "admins_all_newsletters" on public.newsletters;
 create policy "admins_all_newsletters" on public.newsletters
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- GIROS RULETA: cada usuario ve los suyos
 drop policy if exists "users_select_own_giros" on public.giros_ruleta;
@@ -259,7 +270,7 @@ create policy "users_select_own_giros" on public.giros_ruleta
 
 drop policy if exists "admins_all_giros" on public.giros_ruleta;
 create policy "admins_all_giros" on public.giros_ruleta
-  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+  for all using (public.is_admin());
 
 -- =============================================================
 -- FUNCIÓN: reclamar QR (atómica)

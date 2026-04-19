@@ -84,6 +84,7 @@ export function Navbar() {
             {user ? (
               <>
                 <Link href="/dashboard" className="btn-ghost">{t.nav.dashboard}</Link>
+                <Link href="/scan" className="btn-ghost">📷 {t.nav.scan}</Link>
                 <Link href="/rewards" className="btn-ghost">{t.nav.rewards}</Link>
                 <Link href="/roulette" className="btn-ghost">{t.nav.roulette}</Link>
                 <Link href="/news" className="btn-ghost">{t.nav.news}</Link>
@@ -128,6 +129,7 @@ export function Navbar() {
           {user ? (
             <>
               <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.dashboard}</Link>
+              <Link href="/scan" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">📷 {t.nav.scan}</Link>
               <Link href="/rewards" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.rewards}</Link>
               <Link href="/roulette" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.roulette}</Link>
               <Link href="/news" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.news}</Link>
