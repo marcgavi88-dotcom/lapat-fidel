@@ -7,10 +7,26 @@ export const metadata: Metadata = {
   title: "L'Àpat Fidel - Club de fidelitat de L'Àpat del Prat",
   description: "Acumula punts i aconsegueix premis a L'Àpat del Prat",
   manifest: "/manifest.json",
+  applicationName: "L'Àpat Fidel",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "L'Àpat Fidel",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16.png", type: "image/png", sizes: "16x16" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 
@@ -19,6 +35,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
