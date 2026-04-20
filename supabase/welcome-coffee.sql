@@ -10,9 +10,12 @@
 alter table public.premios
   add column if not exists codigo_interno text;
 
+-- NOTA: índex únic *no parcial*. El `on conflict (codigo_interno)` de sota
+-- requereix que el predicate de l'índex coincideixi amb el d'ON CONFLICT;
+-- com que Postgres tracta els NULL com a distints per defecte, l'efecte
+-- pràctic és el mateix: només un registre pot tenir cada valor no-null.
 create unique index if not exists idx_premios_codigo_interno
-  on public.premios(codigo_interno)
-  where codigo_interno is not null;
+  on public.premios(codigo_interno);
 
 -- 2) Insertar el premi "Cafè de benvinguda".
 --    activo = false perquè NO aparegui al catàleg públic de /rewards
