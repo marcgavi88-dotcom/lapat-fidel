@@ -10,6 +10,7 @@ interface QrGenerado {
   codigo: string;
   puntos: number;
   importe_euros: number;
+  croquetas: number;
   es_menu: boolean;
   expira_at: string;
   usado: boolean;
@@ -19,7 +20,7 @@ interface QrGenerado {
 export default function AdminQrPage() {
   const { t } = useI18n();
   const [importe, setImporte] = useState("");
-  const [esMenu, setEsMenu] = useState(false);
+  const [croquetas, setCroquetas] = useState("");
   const [generando, setGenerando] = useState(false);
   const [ultimoQr, setUltimoQr] = useState<QrGenerado | null>(null);
   const [qrImage, setQrImage] = useState<string>("");
@@ -48,7 +49,10 @@ export default function AdminQrPage() {
       const res = await fetch("/api/admin/generate-qr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ importe: Number(importe), es_menu: esMenu }),
+        body: JSON.stringify({
+          importe: Number(importe),
+          croquetas: Number(croquetas) || 0,
+        }),
       });
       const json = await res.json();
       if (json.ok) {
@@ -57,7 +61,7 @@ export default function AdminQrPage() {
         const img = await QRCode.toDataURL(url, { width: 400, margin: 1, errorCorrectionLevel: "M" });
         setQrImage(img);
         setImporte("");
-        setEsMenu(false);
+        setCroquetas("");
         cargarHistorial();
       } else {
         alert(json.error || t.common.error);
@@ -102,10 +106,21 @@ export default function AdminQrPage() {
               </p>
             </div>
 
-            <label className="flex items-center gap-2 rounded-lg bg-crema-50 p-3 text-sm">
-              <input type="checkbox" checked={esMenu} onChange={(e) => setEsMenu(e.target.checked)} />
-              <span>{t.admin.qrIsMenu}</span>
-            </label>
+            <div>
+              <label className="mb-1 block text-sm font-medium">{t.admin.qrCroquetas}</label>
+              <input
+                type="number"
+                step="1"
+                min="0"
+                value={croquetas}
+                onChange={(e) => setCroquetas(e.target.value)}
+                className="input-field"
+                placeholder="8"
+              />
+              <p className="mt-1 text-sm text-oliva-600">
+                🥟 Quantes croquetes ha consumit. Cada <strong>12</strong> atorga 1 tirada a la Ruleta Croquetera i cada <strong>100</strong>, 1 tirada PRO.
+              </p>
+            </div>
 
             <button onClick={handleGenerar} disabled={generando} className="btn-primary w-full">
               {generando ? t.common.loading : t.admin.qrGenerate}
@@ -155,6 +170,18 @@ export default function AdminQrPage() {
                   Consumició: {ultimoQr.importe_euros.toFixed(2)}€
                 </div>
 
+                {ultimoQr.croquetas > 0 && (
+                  <>
+                    <div style={{ borderTop: "1px dashed #000", margin: "2mm 0" }} />
+                    <div style={{ fontSize: "11pt", fontWeight: "bold", margin: "1mm 0" }}>
+                      🥟 +{ultimoQr.croquetas} croquetes
+                    </div>
+                    <div style={{ fontSize: "8pt" }}>
+                      Tirades a la Ruleta Croquetera
+                    </div>
+                  </>
+                )}
+
                 <div style={{ borderTop: "1px dashed #000", margin: "2mm 0" }} />
 
                 <div style={{ fontSize: "8pt", marginTop: "2mm" }}>
@@ -190,7 +217,7 @@ export default function AdminQrPage() {
                 <th className="py-2">Código</th>
                 <th className="py-2">Importe</th>
                 <th className="py-2">Puntos</th>
-                <th className="py-2">Menú</th>
+                <th className="py-2">🥟</th>
                 <th className="py-2">Estado</th>
               </tr>
             </thead>
@@ -205,7 +232,7 @@ export default function AdminQrPage() {
                     <td className="py-2 font-mono">{q.codigo}</td>
                     <td className="py-2">{q.importe_euros.toFixed(2)}€</td>
                     <td className="py-2 font-semibold">{q.puntos}</td>
-                    <td className="py-2">{q.es_menu ? "✓" : ""}</td>
+                    <td className="py-2">{q.croquetas ?? 0}</td>
                     <td className="py-2">
                       {q.usado ? (
                         <span className="text-oliva-600">✓ Usado</span>

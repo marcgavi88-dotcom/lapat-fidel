@@ -19,11 +19,16 @@ export async function POST(req: NextRequest) {
   const { data: prof } = await supa.from("profiles").select("is_admin").eq("id", auth.user.id).single();
   if (!prof?.is_admin) return NextResponse.json({ ok: false, error: "not_admin" }, { status: 403 });
 
-  const { importe, es_menu } = await req.json();
+  const { importe, croquetas } = await req.json();
   const importeNum = Number(importe);
   if (!importeNum || importeNum <= 0) {
     return NextResponse.json({ ok: false, error: "importe_invalido" }, { status: 400 });
   }
+
+  // Croquetes: enter ≥ 0 (per defecte 0). Les capem a 999 per prudència.
+  let croquetasNum = Number.isFinite(Number(croquetas)) ? Math.floor(Number(croquetas)) : 0;
+  if (croquetasNum < 0) croquetasNum = 0;
+  if (croquetasNum > 999) croquetasNum = 999;
 
   // 2.5 puntos por euro, redondeado
   const puntos = Math.round(importeNum * 2.5);
@@ -38,7 +43,8 @@ export async function POST(req: NextRequest) {
       codigo,
       importe_euros: importeNum,
       puntos,
-      es_menu: !!es_menu,
+      croquetas: croquetasNum,
+      es_menu: false, // deprecated: ja no s'utilitza
       expira_at: expiraAt.toISOString(),
       created_by: auth.user.id,
     })

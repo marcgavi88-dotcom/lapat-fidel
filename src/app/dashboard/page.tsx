@@ -14,6 +14,9 @@ interface Profile {
   puntos_total: number;
   puntos_menu: number;
   ultimo_giro_ruleta: string | null;
+  total_croquetas: number;
+  tiradas_ruleta: number;
+  tiradas_ruleta_pro: number;
 }
 
 interface Movimiento {
@@ -41,7 +44,7 @@ export default function DashboardPage() {
       }
       const { data: prof } = await supa
         .from("profiles")
-        .select("id, nombre, apellidos, puntos_total, puntos_menu, ultimo_giro_ruleta")
+        .select("id, nombre, apellidos, puntos_total, puntos_menu, ultimo_giro_ruleta, total_croquetas, tiradas_ruleta, tiradas_ruleta_pro")
         .eq("id", auth.user.id)
         .single();
       if (prof) setProfile(prof);
@@ -62,10 +65,16 @@ export default function DashboardPage() {
   }
   if (!profile) return null;
 
-  // Ruleta: comprueba si ya giró este mes
-  const puedeGirar = !profile.ultimo_giro_ruleta ||
-    new Date(profile.ultimo_giro_ruleta).getMonth() !== new Date().getMonth() ||
-    new Date(profile.ultimo_giro_ruleta).getFullYear() !== new Date().getFullYear();
+  const totalCroquetas = profile.total_croquetas ?? 0;
+  const tiradas = profile.tiradas_ruleta ?? 0;
+  const tiradasPro = profile.tiradas_ruleta_pro ?? 0;
+  const faltaNormal = 12 - (totalCroquetas % 12);
+  const faltaPro = 100 - (totalCroquetas % 100);
+  // Progrés: croquetes cap al proper múltiple de 12 (0..11 dins del cicle)
+  const progresNormalPct = Math.round(((totalCroquetas % 12) / 12) * 100);
+  const progresProPct = Math.round(((totalCroquetas % 100) / 100) * 100);
+
+  const puedeGirar = tiradas > 0 || tiradasPro > 0;
 
   const siguientePremio = getSiguientePremio(profile.puntos_total, lang);
 
@@ -103,20 +112,75 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Ruleta acceso rápido */}
+      {/* Targeta de croquetes i progrés cap a tirades */}
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="serif text-xl text-terracota-800">🥟 {t.dashboard.croquetasTotal}</h2>
+            <p className="mt-1 text-3xl font-semibold text-terracota-700">{totalCroquetas}</p>
+          </div>
+          <Link href="/roulette" className="rounded-full border border-terracota-200 px-4 py-2 text-sm text-terracota-700 hover:bg-terracota-50">
+            🎡 {t.dashboard.monthlyRoulette} →
+          </Link>
+        </div>
+
+        {/* Comptador de tirades */}
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="rounded-xl bg-crema-50 p-3 text-center">
+            <div className="text-xs uppercase text-oliva-600">🎡 {t.roulette.spinsNormal}</div>
+            <div className="text-2xl font-bold text-terracota-700">{tiradas}</div>
+          </div>
+          <div className="rounded-xl bg-terracota-50 p-3 text-center">
+            <div className="text-xs uppercase text-oliva-600">⭐ {t.roulette.spinsPro}</div>
+            <div className="text-2xl font-bold text-terracota-800">{tiradasPro}</div>
+          </div>
+        </div>
+
+        {/* Barra de progrés cap a la propera tirada normal */}
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-xs text-oliva-600">
+            <span>{tpl(t.dashboard.nextSpinIn, { n: faltaNormal })}</span>
+            <span>{totalCroquetas % 12}/12</span>
+          </div>
+          <div className="mt-1 h-2 overflow-hidden rounded-full bg-crema-200">
+            <div
+              className="h-full bg-terracota-500 transition-all"
+              style={{ width: `${progresNormalPct}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Barra de progrés cap a la propera tirada PRO */}
+        <div className="mt-3">
+          <div className="flex items-center justify-between text-xs text-oliva-600">
+            <span>{tpl(t.dashboard.nextProInIn, { n: faltaPro })}</span>
+            <span>{totalCroquetas % 100}/100</span>
+          </div>
+          <div className="mt-1 h-2 overflow-hidden rounded-full bg-crema-200">
+            <div
+              className="h-full bg-gradient-to-r from-terracota-700 to-terracota-900 transition-all"
+              style={{ width: `${progresProPct}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Ruleta accés ràpid */}
       <Link href="/roulette" className="block">
         <div className={`card flex items-center justify-between transition hover:shadow-md ${!puedeGirar ? "opacity-70" : ""}`}>
           <div>
             <h2 className="serif text-xl text-terracota-800">🎡 {t.dashboard.monthlyRoulette}</h2>
             <p className="mt-1 text-sm text-oliva-700">
-              {puedeGirar ? t.dashboard.spinNow : t.dashboard.alreadySpun}
+              {puedeGirar
+                ? `${tpl(t.dashboard.spinsAvailable, { n: tiradas + tiradasPro })}`
+                : t.roulette.noTiradas}
             </p>
           </div>
           <span className="text-2xl">{puedeGirar ? "→" : "✓"}</span>
         </div>
       </Link>
 
-      {/* Actividad reciente */}
+      {/* Activitat recent */}
       <div className="card">
         <h2 className="serif mb-4 text-xl text-terracota-800">{t.dashboard.recentActivity}</h2>
         {movimientos.length === 0 ? (
