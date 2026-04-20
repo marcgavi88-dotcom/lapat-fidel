@@ -6,6 +6,9 @@ import { useI18n } from "@/i18n/provider";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { usePathname, useRouter } from "next/navigation";
 
+const BOOK_URL =
+  "https://www.covermanager.com/reservation/module_restaurant/restaurante-lapatdelprat/spanish";
+
 export function Navbar() {
   const { t, lang, setLang } = useI18n();
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
@@ -138,6 +141,15 @@ export function Navbar() {
               <Link href="/roulette" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.roulette}</Link>
               <Link href="/ressenya" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">⭐ {t.nav.ressenya}</Link>
               <Link href="/historia" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">📸 {t.nav.historia}</Link>
+              <a
+                href={BOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2 hover:bg-oliva-100"
+              >
+                🍽️ {t.nav.reservar}
+              </a>
               <Link href="/news" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.news}</Link>
               {isAdmin && (
                 <Link href="/admin" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-azulmar-700 hover:bg-oliva-100">{t.nav.admin}</Link>
@@ -146,6 +158,15 @@ export function Navbar() {
             </>
           ) : (
             <>
+              <a
+                href={BOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2 hover:bg-oliva-100"
+              >
+                🍽️ {t.nav.reservar}
+              </a>
               <Link href="/news" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.news}</Link>
               <Link href="/login" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.login}</Link>
               <Link href="/register" onClick={() => setMenuOpen(false)} className="btn-primary mt-2 w-full">{t.nav.register}</Link>

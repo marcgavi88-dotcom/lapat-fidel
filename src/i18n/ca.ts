@@ -13,6 +13,8 @@ export const ca = {
     news: "Notícies",
     ressenya: "Ressenya",
     historia: "Història IG",
+    reservar: "Reservar taula",
+    web: "Web",
     scan: "Escanejar QR",
     login: "Iniciar sessió",
     register: "Registrar-se",
@@ -158,6 +160,11 @@ export const ca = {
     storyTileAvailable: "Guanya 50 punts per una història amb @apatdelprat",
     storyTilePending: "La teva història està en revisió",
     storyTileClaimed: "Ja has reclamat aquesta setmana",
+    // Accessos directes al restaurant
+    actionsTitle: "Reserva o visita'ns",
+    actionsSubtitle: "Gestiona la teva reserva o explora la nostra web",
+    actionsBookTable: "Reservar taula",
+    actionsVisitWeb: "Anar a la web",
   },
 
   // Ressenya de Google (Fase 4)

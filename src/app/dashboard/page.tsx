@@ -9,6 +9,10 @@ import InstallPWA from "@/components/InstallPWA";
 import RankingWidget from "@/components/RankingWidget";
 import TitlesGrid from "@/components/TitlesGrid";
 
+const BOOK_URL =
+  "https://www.covermanager.com/reservation/module_restaurant/restaurante-lapatdelprat/spanish";
+const WEB_URL = "https://apatdelprat.es";
+
 interface Profile {
   id: string;
   nombre: string;
@@ -161,6 +165,30 @@ export default function DashboardPage() {
               🎡 {t.dashboard.monthlyRoulette}
             </Link>
           </div>
+        </div>
+      </div>
+
+      {/* Accessos directes: Reservar + Web */}
+      <div className="card">
+        <h2 className="serif text-xl text-terracota-800">🍽️ {t.dashboard.actionsTitle}</h2>
+        <p className="mt-1 text-sm text-oliva-700">{t.dashboard.actionsSubtitle}</p>
+        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <a
+            href={BOOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary text-center"
+          >
+            🍽️ {t.dashboard.actionsBookTable}
+          </a>
+          <a
+            href={WEB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary text-center"
+          >
+            🌐 {t.dashboard.actionsVisitWeb}
+          </a>
         </div>
       </div>
 

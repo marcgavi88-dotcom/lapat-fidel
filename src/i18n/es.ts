@@ -14,6 +14,8 @@ export const es: Translations = {
     news: "Noticias",
     ressenya: "Reseña",
     historia: "Historia IG",
+    reservar: "Reservar mesa",
+    web: "Web",
     scan: "Escanear QR",
     login: "Iniciar sesión",
     register: "Registrarse",
@@ -153,6 +155,11 @@ export const es: Translations = {
     storyTileAvailable: "Gana 50 puntos por una historia con @apatdelprat",
     storyTilePending: "Tu historia está en revisión",
     storyTileClaimed: "Ya la has reclamado esta semana",
+    // Accesos directos al restaurante
+    actionsTitle: "Reserva o visítanos",
+    actionsSubtitle: "Gestiona tu reserva o explora nuestra web",
+    actionsBookTable: "Reservar mesa",
+    actionsVisitWeb: "Ir a la web",
   },
 
   // Reseña de Google (Fase 4)
