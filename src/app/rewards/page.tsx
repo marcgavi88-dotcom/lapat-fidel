@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n, tpl } from "@/i18n/provider";
@@ -47,8 +48,9 @@ export default function RewardsPage() {
         .from("canjes")
         .select("id, codigo_canje, estado, created_at, premios(nombre_ca, nombre_es)")
         .eq("user_id", auth.user.id)
+        .eq("estado", "pendiente")
         .order("created_at", { ascending: false })
-        .limit(10),
+        .limit(3),
     ]);
     if (prof.data) setPuntos(prof.data.puntos_total);
     if (prem.data) setPremios(prem.data);
@@ -129,9 +131,14 @@ export default function RewardsPage() {
         })}
       </div>
 
-      {/* Mis códigos */}
+      {/* Mis códigos pendientes (resumen; llista completa a /mis-premios) */}
       <div className="card">
-        <h2 className="serif mb-4 text-xl text-terracota-800">{t.rewards.myCodes}</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="serif text-xl text-terracota-800">{t.rewards.myCodes}</h2>
+          <Link href="/mis-premios" className="text-sm text-terracota-700 hover:underline">
+            {t.misPremios.seeAll} →
+          </Link>
+        </div>
         {misCanjes.length === 0 ? (
           <p className="text-oliva-600">{t.rewards.noCodes}</p>
         ) : (
@@ -148,9 +155,7 @@ export default function RewardsPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-mono text-lg font-semibold text-terracota-700">{c.codigo_canje}</p>
-                  <span className={`text-xs ${c.estado === "validado" ? "text-oliva-600" : "text-terracota-600"}`}>
-                    {c.estado === "validado" ? t.rewards.validated : t.rewards.pending}
-                  </span>
+                  <span className="text-xs text-terracota-600">{t.rewards.pending}</span>
                 </div>
               </li>
             ))}

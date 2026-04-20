@@ -32,6 +32,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
+  const [canjesActius, setCanjesActius] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,6 +57,14 @@ export default function DashboardPage() {
         .order("created_at", { ascending: false })
         .limit(10);
       if (movs) setMovimientos(movs);
+
+      const { count } = await supa
+        .from("canjes")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", auth.user.id)
+        .eq("estado", "pendiente");
+      setCanjesActius(count ?? 0);
+
       setLoading(false);
     })();
   }, [router]);
@@ -179,6 +188,21 @@ export default function DashboardPage() {
           <span className="text-2xl">{puedeGirar ? "→" : "✓"}</span>
         </div>
       </Link>
+
+      {/* Els meus premis actius */}
+      {canjesActius > 0 && (
+        <Link href="/mis-premios" className="block">
+          <div className="card flex items-center justify-between bg-gradient-to-r from-terracota-50 to-crema-50 transition hover:shadow-md">
+            <div>
+              <h2 className="serif text-xl text-terracota-800">🎁 {t.dashboard.myActivePrizes}</h2>
+              <p className="mt-1 text-sm text-oliva-700">
+                {tpl(t.dashboard.activePrizesCount, { n: canjesActius })}
+              </p>
+            </div>
+            <span className="text-2xl">→</span>
+          </div>
+        </Link>
+      )}
 
       {/* Activitat recent */}
       <div className="card">

@@ -20,6 +20,7 @@ export default function AdminRedemptionsPage() {
   const [canjes, setCanjes] = useState<Canje[]>([]);
   const [filtro, setFiltro] = useState<"pendiente" | "validado" | "rechazado" | "todos">("pendiente");
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
     cargar();
@@ -79,7 +80,14 @@ export default function AdminRedemptionsPage() {
     cargar();
   };
 
-  const filtrados = canjes.filter((c) => filtro === "todos" || c.estado === filtro);
+  const busquedaNorm = busqueda.trim().toUpperCase();
+  const filtradosPorEstado = canjes.filter((c) => filtro === "todos" || c.estado === filtro);
+  const filtrados = busquedaNorm
+    ? filtradosPorEstado.filter((c) => c.codigo_canje.toUpperCase().includes(busquedaNorm))
+    : filtradosPorEstado;
+  const matchExacte = busquedaNorm
+    ? canjes.find((c) => c.codigo_canje.toUpperCase() === busquedaNorm)
+    : null;
 
   return (
     <div className="space-y-6">
@@ -90,6 +98,39 @@ export default function AdminRedemptionsPage() {
           Error carregant canjes: {loadError}
         </div>
       )}
+
+      {/* Cercador de codi */}
+      <div className="card">
+        <label className="block text-sm font-medium text-oliva-800">{t.admin.searchCode}</label>
+        <div className="mt-2 flex gap-2">
+          <input
+            type="text"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value.toUpperCase())}
+            placeholder={t.admin.enterCode}
+            className="flex-1 rounded-xl border border-oliva-200 bg-white px-4 py-2 font-mono text-lg uppercase tracking-wider focus:border-terracota-500 focus:outline-none"
+            autoComplete="off"
+            autoCapitalize="characters"
+          />
+          {busqueda && (
+            <button
+              onClick={() => setBusqueda("")}
+              className="rounded-xl border border-oliva-200 bg-white px-4 py-2 text-sm text-oliva-700 hover:bg-oliva-50"
+            >
+              {t.admin.clearSearch}
+            </button>
+          )}
+        </div>
+        {busquedaNorm && (
+          <p className="mt-2 text-xs text-oliva-600">
+            {matchExacte
+              ? `${t.admin.codeFound}: ${matchExacte.codigo_canje} · ${matchExacte.estado}`
+              : filtrados.length === 0
+              ? t.admin.noMatch
+              : `${filtrados.length} resultats`}
+          </p>
+        )}
+      </div>
 
       <div className="flex gap-2">
         {[
@@ -126,8 +167,10 @@ export default function AdminRedemptionsPage() {
             </tr>
           </thead>
           <tbody>
-            {filtrados.map((c) => (
-              <tr key={c.id} className="border-b border-crema-100">
+            {filtrados.map((c) => {
+              const esMatch = matchExacte?.id === c.id;
+              return (
+              <tr key={c.id} className={`border-b border-crema-100 ${esMatch ? "bg-yellow-50 ring-2 ring-yellow-300" : ""}`}>
                 <td className="py-2 font-mono font-bold text-terracota-700">{c.codigo_canje}</td>
                 <td className="py-2">
                   {c.profiles?.nombre} {c.profiles?.apellidos}
@@ -150,7 +193,13 @@ export default function AdminRedemptionsPage() {
                 <td className="py-2">
                   {c.estado === "pendiente" && (
                     <div className="flex gap-1">
-                      <button onClick={() => actualizar(c.id, "validado")} className="rounded bg-oliva-600 px-2 py-1 text-xs text-white hover:bg-oliva-700">
+                      <button
+                        onClick={() => actualizar(c.id, "validado")}
+                        autoFocus={esMatch && c.estado === "pendiente"}
+                        className={`rounded px-2 py-1 text-xs text-white ${
+                          esMatch ? "bg-oliva-700 ring-2 ring-oliva-800" : "bg-oliva-600 hover:bg-oliva-700"
+                        }`}
+                      >
                         ✓ {t.admin.validate}
                       </button>
                       <button onClick={() => actualizar(c.id, "rechazado")} className="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700">
@@ -160,7 +209,8 @@ export default function AdminRedemptionsPage() {
                   )}
                 </td>
               </tr>
-            ))}
+              );
+            })}
             {filtrados.length === 0 && (
               <tr><td colSpan={7} className="py-8 text-center text-oliva-600">Sin canjes</td></tr>
             )}

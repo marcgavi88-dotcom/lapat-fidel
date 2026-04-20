@@ -8,6 +8,7 @@ export const ca = {
     home: "Inici",
     dashboard: "El meu compte",
     rewards: "Premis",
+    misPremios: "Els meus premis",
     roulette: "Ruleta Croquetera",
     news: "Notícies",
     scan: "Escanejar QR",
@@ -128,6 +129,30 @@ export const ca = {
     recentActivity: "Activitat recent",
     noActivity: "Encara no tens activitat",
     pointsEquivalent: "equivalen a",
+    myActivePrizes: "Els meus premis actius",
+    viewMyPrizes: "Veure els meus premis",
+    activePrizesCount: "{n} codi/s per bescanviar",
+  },
+
+  // Mis premios (canjes actius + historial)
+  misPremios: {
+    title: "Els meus premis",
+    subtitle: "Codis per bescanviar a L'Àpat del Prat",
+    activeCodes: "Codis actius",
+    historyCodes: "Historial",
+    noActive: "Encara no tens cap codi pendent",
+    empty: "Encara no has guanyat cap premi",
+    goToRoulette: "Gira la ruleta",
+    goToRewards: "Veure premis",
+    tapToShow: "Toca un codi per ampliar-lo",
+    showAtCounter: "Ensenya aquest codi a la barra",
+    redeemedOn: "Canjejat el {date}",
+    rejectedOn: "Rebutjat el {date}",
+    statusPending: "Pendent",
+    statusValidated: "Canjejat",
+    statusRejected: "Rebutjat",
+    seeAll: "Veure tots",
+    close: "Tancar",
   },
 
   // QR
@@ -235,6 +260,11 @@ export const ca = {
     date: "Data",
     validate: "Validar",
     reject: "Rebutjar",
+    searchCode: "Cercar codi",
+    enterCode: "Introdueix el codi (p.ex. ABC123)",
+    noMatch: "Cap codi coincideix",
+    codeFound: "Codi trobat",
+    clearSearch: "Netejar",
 
     // Stats
     statsTotalClients: "Clients registrats",
