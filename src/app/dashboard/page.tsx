@@ -29,12 +29,15 @@ interface Movimiento {
   created_at: string;
 }
 
+type ReviewStatus = "available" | "pendiente" | "validado";
+
 export default function DashboardPage() {
   const { t, lang } = useI18n();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
   const [canjesActius, setCanjesActius] = useState(0);
+  const [reviewStatus, setReviewStatus] = useState<ReviewStatus>("available");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,6 +69,22 @@ export default function DashboardPage() {
         .eq("user_id", auth.user.id)
         .eq("estado", "pendiente");
       setCanjesActius(count ?? 0);
+
+      // Estat de la ressenya d'aquest mes (pendiente/validado bloquegen la tile)
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const { data: rev } = await supa
+        .from("reviews")
+        .select("estado")
+        .eq("user_id", auth.user.id)
+        .gte("created_at", monthStart)
+        .in("estado", ["pendiente", "validado"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (rev?.estado === "pendiente") setReviewStatus("pendiente");
+      else if (rev?.estado === "validado") setReviewStatus("validado");
+      else setReviewStatus("available");
 
       setLoading(false);
     })();
@@ -205,6 +224,31 @@ export default function DashboardPage() {
           </div>
         </Link>
       )}
+
+      {/* Ressenya de Google (Fase 4) */}
+      <Link href="/ressenya" className="block">
+        <div
+          className={`card flex items-center justify-between transition hover:shadow-md ${
+            reviewStatus === "validado" ? "opacity-70" : ""
+          }`}
+        >
+          <div>
+            <h2 className="serif text-xl text-terracota-800">
+              ⭐ {t.dashboard.reviewTile}
+            </h2>
+            <p className="mt-1 text-sm text-oliva-700">
+              {reviewStatus === "pendiente"
+                ? t.dashboard.reviewTilePending
+                : reviewStatus === "validado"
+                ? t.dashboard.reviewTileClaimed
+                : t.dashboard.reviewTileAvailable}
+            </p>
+          </div>
+          <span className="text-2xl">
+            {reviewStatus === "validado" ? "✓" : reviewStatus === "pendiente" ? "⏳" : "→"}
+          </span>
+        </div>
+      </Link>
 
       {/* Taulell de títols (rangs desbloquejables) */}
       <TitlesGrid puntos={profile.puntos_total} />

@@ -43,6 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/qr", label: t.admin.generateQr, icon: "🎫" },
     { href: "/admin/clients", label: t.admin.clients, icon: "👥" },
     { href: "/admin/redemptions", label: t.admin.redemptions, icon: "🎁" },
+    { href: "/admin/reviews", label: t.admin.reviews, icon: "⭐" },
     { href: "/admin/news", label: t.admin.news, icon: "📰" },
     { href: "/admin/newsletter", label: t.admin.newsletter, icon: "📧" },
     { href: "/admin/stats", label: t.admin.stats, icon: "📊" },
