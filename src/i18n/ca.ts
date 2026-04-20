@@ -12,6 +12,7 @@ export const ca = {
     roulette: "Ruleta Croquetera",
     news: "Notícies",
     ressenya: "Ressenya",
+    historia: "Història IG",
     scan: "Escanejar QR",
     login: "Iniciar sessió",
     register: "Registrar-se",
@@ -152,6 +153,11 @@ export const ca = {
     reviewTileAvailable: "Guanya 100 punts per una ressenya de 5★",
     reviewTilePending: "La teva ressenya està en revisió",
     reviewTileClaimed: "Ja has reclamat aquest mes",
+    // Història Instagram (Fase 5)
+    storyTile: "Història d'Instagram",
+    storyTileAvailable: "Guanya 50 punts per una història amb @apatdelprat",
+    storyTilePending: "La teva història està en revisió",
+    storyTileClaimed: "Ja has reclamat aquesta setmana",
   },
 
   // Ressenya de Google (Fase 4)
@@ -184,6 +190,38 @@ export const ca = {
     tip1: "La ressenya ha de ser pública i visible a Google Maps",
     tip2: "La captura ha de mostrar clarament les 5 estrelles",
     tip3: "Si canvies la ressenya més tard podem retirar els punts",
+  },
+
+  // Història d'Instagram (Fase 5)
+  historia: {
+    title: "Història d'Instagram",
+    subtitle: "Guanya 50 punts compartint una història amb @apatdelprat",
+    reward: "+50 punts",
+    limitNote: "Màxim 1 història per setmana (dl-dg).",
+    stepsTitle: "Com funciona",
+    step1: "Fes una història a Instagram amb una foto del menjar o del restaurant",
+    step2: "Etiqueta @apatdelprat a la història",
+    step3: "Fes captura de pantalla i puja-la aquí. L'equip la valida.",
+    openInstagram: "Obrir Instagram",
+    uploadLabel: "Captura de pantalla",
+    uploadHint: "Format JPG o PNG, màxim 5 MB",
+    uploadChoose: "Triar fitxer",
+    submit: "Enviar per validació",
+    submitting: "Enviant...",
+    statusPending: "En revisió",
+    statusPendingDesc: "L'equip validarà la teva història ben aviat.",
+    statusValidated: "Validada!",
+    statusValidatedDesc: "Els 50 punts ja són al teu compte.",
+    statusRejected: "Rebutjada",
+    statusRejectedDesc: "Motiu: {motivo}",
+    errorAlreadyClaimed: "Ja has reclamat la història d'aquesta setmana.",
+    errorUpload: "No s'ha pogut pujar la captura. Torna-ho a provar.",
+    errorGeneric: "S'ha produït un error. Torna-ho a provar.",
+    successMessage: "Història enviada! Et notificarem quan es validi.",
+    tipsTitle: "Consells",
+    tip1: "La història ha de ser pública (no d'amics propers)",
+    tip2: "Ha de mostrar clarament l'etiqueta @apatdelprat",
+    tip3: "La captura ha de ser de la història ja publicada",
   },
 
   // Mis premios (canjes actius + historial)
@@ -297,6 +335,7 @@ export const ca = {
     clients: "Clients",
     redemptions: "Bescanvis",
     reviews: "Ressenyes",
+    stories: "Històries IG",
     news: "Notícies",
     newsletter: "Butlletí",
     stats: "Estadístiques",
@@ -357,6 +396,18 @@ export const ca = {
     reviewsStatusRejected: "Rebutjada",
     reviewsValidated: "Ressenya validada i punts atorgats",
     reviewsRejected: "Ressenya rebutjada",
+
+    // Històries Instagram (Fase 5)
+    storiesTitle: "Històries d'Instagram",
+    storiesSubtitle: "Valida o rebutja històries enviades pels clients",
+    storiesEmpty: "No hi ha històries pendents",
+    storiesValidate: "Validar (+50 pts)",
+    storiesReject: "Rebutjar",
+    storiesRejectPrompt: "Motiu del rebuig (opcional)",
+    storiesRejectConfirm: "Confirmar rebuig",
+    storiesStatusPending: "Pendent",
+    storiesStatusValidated: "Validada",
+    storiesStatusRejected: "Rebutjada",
   },
 
   install: {

@@ -89,6 +89,7 @@ export function Navbar() {
                 <Link href="/mis-premios" className="btn-ghost">🎁 {t.nav.misPremios}</Link>
                 <Link href="/roulette" className="btn-ghost">{t.nav.roulette}</Link>
                 <Link href="/ressenya" className="btn-ghost">⭐ {t.nav.ressenya}</Link>
+                <Link href="/historia" className="btn-ghost">📸 {t.nav.historia}</Link>
                 <Link href="/news" className="btn-ghost">{t.nav.news}</Link>
                 {isAdmin && (
                   <Link href="/admin" className="btn-ghost text-azulmar-700">{t.nav.admin}</Link>
@@ -136,6 +137,7 @@ export function Navbar() {
               <Link href="/mis-premios" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">🎁 {t.nav.misPremios}</Link>
               <Link href="/roulette" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.roulette}</Link>
               <Link href="/ressenya" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">⭐ {t.nav.ressenya}</Link>
+              <Link href="/historia" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">📸 {t.nav.historia}</Link>
               <Link href="/news" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.news}</Link>
               {isAdmin && (
                 <Link href="/admin" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-azulmar-700 hover:bg-oliva-100">{t.nav.admin}</Link>

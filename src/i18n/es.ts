@@ -13,6 +13,7 @@ export const es: Translations = {
     roulette: "Ruleta Croquetera",
     news: "Noticias",
     ressenya: "Reseña",
+    historia: "Historia IG",
     scan: "Escanear QR",
     login: "Iniciar sesión",
     register: "Registrarse",
@@ -147,6 +148,11 @@ export const es: Translations = {
     reviewTileAvailable: "Gana 100 puntos por una reseña de 5★",
     reviewTilePending: "Tu reseña está en revisión",
     reviewTileClaimed: "Ya la has reclamado este mes",
+    // Historia Instagram (Fase 5)
+    storyTile: "Historia de Instagram",
+    storyTileAvailable: "Gana 50 puntos por una historia con @apatdelprat",
+    storyTilePending: "Tu historia está en revisión",
+    storyTileClaimed: "Ya la has reclamado esta semana",
   },
 
   // Reseña de Google (Fase 4)
@@ -179,6 +185,38 @@ export const es: Translations = {
     tip1: "La reseña debe ser pública y visible en Google Maps",
     tip2: "La captura debe mostrar claramente las 5 estrellas",
     tip3: "Si cambias la reseña después podemos retirar los puntos",
+  },
+
+  // Historia de Instagram (Fase 5)
+  historia: {
+    title: "Historia de Instagram",
+    subtitle: "Gana 50 puntos compartiendo una historia con @apatdelprat",
+    reward: "+50 puntos",
+    limitNote: "Máximo 1 historia por semana (lun-dom).",
+    stepsTitle: "Cómo funciona",
+    step1: "Sube una historia a Instagram con una foto de la comida o del restaurante",
+    step2: "Etiqueta @apatdelprat en la historia",
+    step3: "Haz captura de pantalla y súbela aquí. El equipo la valida.",
+    openInstagram: "Abrir Instagram",
+    uploadLabel: "Captura de pantalla",
+    uploadHint: "Formato JPG o PNG, máximo 5 MB",
+    uploadChoose: "Elegir archivo",
+    submit: "Enviar para validación",
+    submitting: "Enviando...",
+    statusPending: "En revisión",
+    statusPendingDesc: "El equipo validará tu historia muy pronto.",
+    statusValidated: "¡Validada!",
+    statusValidatedDesc: "Los 50 puntos ya están en tu cuenta.",
+    statusRejected: "Rechazada",
+    statusRejectedDesc: "Motivo: {motivo}",
+    errorAlreadyClaimed: "Ya has reclamado la historia de esta semana.",
+    errorUpload: "No se ha podido subir la captura. Inténtalo de nuevo.",
+    errorGeneric: "Se ha producido un error. Inténtalo de nuevo.",
+    successMessage: "¡Historia enviada! Te avisaremos cuando se valide.",
+    tipsTitle: "Consejos",
+    tip1: "La historia debe ser pública (no de amigos cercanos)",
+    tip2: "Debe mostrar claramente la etiqueta @apatdelprat",
+    tip3: "La captura debe ser de la historia ya publicada",
   },
 
   misPremios: {
@@ -286,6 +324,7 @@ export const es: Translations = {
     clients: "Clientes",
     redemptions: "Canjes",
     reviews: "Reseñas",
+    stories: "Historias IG",
     news: "Noticias",
     newsletter: "Boletín",
     stats: "Estadísticas",
@@ -342,6 +381,18 @@ export const es: Translations = {
     reviewsStatusRejected: "Rechazada",
     reviewsValidated: "Reseña validada y puntos otorgados",
     reviewsRejected: "Reseña rechazada",
+
+    // Historias Instagram (Fase 5)
+    storiesTitle: "Historias de Instagram",
+    storiesSubtitle: "Valida o rechaza historias enviadas por los clientes",
+    storiesEmpty: "No hay historias pendientes",
+    storiesValidate: "Validar (+50 pts)",
+    storiesReject: "Rechazar",
+    storiesRejectPrompt: "Motivo del rechazo (opcional)",
+    storiesRejectConfirm: "Confirmar rechazo",
+    storiesStatusPending: "Pendiente",
+    storiesStatusValidated: "Validada",
+    storiesStatusRejected: "Rechazada",
   },
 
   install: {

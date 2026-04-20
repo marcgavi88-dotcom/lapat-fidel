@@ -29,7 +29,7 @@ interface Movimiento {
   created_at: string;
 }
 
-type ReviewStatus = "available" | "pendiente" | "validado";
+type ClaimStatus = "available" | "pendiente" | "validado";
 
 export default function DashboardPage() {
   const { t, lang } = useI18n();
@@ -37,7 +37,8 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
   const [canjesActius, setCanjesActius] = useState(0);
-  const [reviewStatus, setReviewStatus] = useState<ReviewStatus>("available");
+  const [reviewStatus, setReviewStatus] = useState<ClaimStatus>("available");
+  const [storyStatus, setStoryStatus] = useState<ClaimStatus>("available");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,6 +86,27 @@ export default function DashboardPage() {
       if (rev?.estado === "pendiente") setReviewStatus("pendiente");
       else if (rev?.estado === "validado") setReviewStatus("validado");
       else setReviewStatus("available");
+
+      // Estat de la història d'aquesta setmana (dilluns-diumenge)
+      const day = now.getDay(); // 0 = diumenge, 1 = dilluns...
+      const diff = day === 0 ? -6 : 1 - day;
+      const weekStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + diff
+      ).toISOString();
+      const { data: story } = await supa
+        .from("stories")
+        .select("estado")
+        .eq("user_id", auth.user.id)
+        .gte("created_at", weekStart)
+        .in("estado", ["pendiente", "validado"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (story?.estado === "pendiente") setStoryStatus("pendiente");
+      else if (story?.estado === "validado") setStoryStatus("validado");
+      else setStoryStatus("available");
 
       setLoading(false);
     })();
@@ -246,6 +268,31 @@ export default function DashboardPage() {
           </div>
           <span className="text-2xl">
             {reviewStatus === "validado" ? "✓" : reviewStatus === "pendiente" ? "⏳" : "→"}
+          </span>
+        </div>
+      </Link>
+
+      {/* Història d'Instagram (Fase 5) */}
+      <Link href="/historia" className="block">
+        <div
+          className={`card flex items-center justify-between transition hover:shadow-md ${
+            storyStatus === "validado" ? "opacity-70" : ""
+          }`}
+        >
+          <div>
+            <h2 className="serif text-xl text-terracota-800">
+              📸 {t.dashboard.storyTile}
+            </h2>
+            <p className="mt-1 text-sm text-oliva-700">
+              {storyStatus === "pendiente"
+                ? t.dashboard.storyTilePending
+                : storyStatus === "validado"
+                ? t.dashboard.storyTileClaimed
+                : t.dashboard.storyTileAvailable}
+            </p>
+          </div>
+          <span className="text-2xl">
+            {storyStatus === "validado" ? "✓" : storyStatus === "pendiente" ? "⏳" : "→"}
           </span>
         </div>
       </Link>
