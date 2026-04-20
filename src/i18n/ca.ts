@@ -50,6 +50,27 @@ export const ca = {
     step3Desc: "Bescanvia els teus punts per premis exclusius",
   },
 
+  // Cafè de benvinguda (landing /benvinguda)
+  welcome: {
+    badge: "Regal de benvinguda",
+    title: "Un cafè gratis només per registrar-te",
+    subtitle:
+      "Uneix-te al club L'Àpat Fidel i gaudeix d'un cafè de cortesia a la teva propera visita.",
+    cta: "Apuntar-me ara",
+    haveAccount: "Ja formes part del club?",
+    haveAccountNote: "El regal és només per a nous membres",
+    perksTitle: "Què hi guanyes?",
+    perk1: "Un cafè de cortesia de benvinguda",
+    perk2: "Suma punts amb cada consumició i bescanvia'ls per premis",
+    perk3: "Gira la ruleta mensual i emporta't premis extres",
+    howTitle: "Com funciona?",
+    how1: "Registra't gratis (triga menys d'un minut)",
+    how2: "Troba el teu cafè a 'Premis' i mostra el codi a la barra",
+    how3: "Acumula punts a cada visita per a futurs premis",
+    legal:
+      "Regal d'un sol ús per cada nou registre. Bescanviable a l'establiment L'Àpat del Prat.",
+  },
+
   // Registro
   register: {
     title: "Crea el teu compte",
@@ -62,10 +83,14 @@ export const ca = {
     passwordMin: "Mínim 6 caràcters",
     terms: "Accepto els termes i condicions",
     promotions: "Accepto rebre promocions i novetats de L'Àpat del Prat per correu electrònic",
+    bannerWelcome:
+      "Completa el registre i el teu cafè de benvinguda quedarà llest per bescanviar.",
     submit: "Crear compte",
     already: "Ja tens compte?",
     loginHere: "Inicia sessió aquí",
     success: "Compte creat! Revisa el teu correu per confirmar.",
+    successWelcome:
+      "Ja formes part del club! El teu cafè de benvinguda t'espera.",
     errorTerms: "Has d'acceptar els termes i condicions",
   },
 

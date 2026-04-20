@@ -49,6 +49,26 @@ export const es: Translations = {
     step3Desc: "Canjea tus puntos por premios exclusivos",
   },
 
+  welcome: {
+    badge: "Regalo de bienvenida",
+    title: "Un café gratis solo por registrarte",
+    subtitle:
+      "Únete al club L'Àpat Fidel y disfruta de un café de cortesía en tu próxima visita.",
+    cta: "Apuntarme ahora",
+    haveAccount: "¿Ya formas parte del club?",
+    haveAccountNote: "El regalo es solo para nuevos miembros",
+    perksTitle: "¿Qué te llevas?",
+    perk1: "Un café de cortesía de bienvenida",
+    perk2: "Suma puntos en cada consumición y canjéalos por premios",
+    perk3: "Gira la ruleta mensual y llévate premios extra",
+    howTitle: "¿Cómo funciona?",
+    how1: "Regístrate gratis (tardas menos de un minuto)",
+    how2: "Encuentra tu café en 'Premios' y muestra el código en la barra",
+    how3: "Acumula puntos en cada visita para futuros premios",
+    legal:
+      "Regalo de un solo uso por cada nuevo registro. Canjeable en el establecimiento L'Àpat del Prat.",
+  },
+
   register: {
     title: "Crea tu cuenta",
     subtitle: "Gratis y en menos de un minuto",
@@ -60,10 +80,14 @@ export const es: Translations = {
     passwordMin: "Mínimo 6 caracteres",
     terms: "Acepto los términos y condiciones",
     promotions: "Acepto recibir promociones y novedades de L'Àpat del Prat por correo electrónico",
+    bannerWelcome:
+      "Completa el registro y tu café de bienvenida quedará listo para canjear.",
     submit: "Crear cuenta",
     already: "¿Ya tienes cuenta?",
     loginHere: "Inicia sesión aquí",
     success: "¡Cuenta creada! Revisa tu correo para confirmar.",
+    successWelcome:
+      "¡Ya formas parte del club! Tu café de bienvenida te espera.",
     errorTerms: "Debes aceptar los términos y condiciones",
   },
 
