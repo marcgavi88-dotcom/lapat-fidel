@@ -11,7 +11,10 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const qrCode = searchParams.get("qr"); // si venimos de un QR, lo guardamos
-  const redirectTo = searchParams.get("redirect") || (qrCode ? `/qr/${qrCode}` : "/dashboard");
+  const promoCafe = searchParams.get("promo") === "cafe"; // QR físic de benvinguda
+  const redirectTo =
+    searchParams.get("redirect") ||
+    (qrCode ? `/qr/${qrCode}` : promoCafe ? "/rewards" : "/dashboard");
 
   const [nombre, setNombre] = useState("");
   const [apellidos, setApellidos] = useState("");
@@ -46,6 +49,9 @@ function RegisterForm() {
           telefono,
           acepta_promociones: acceptaPromociones,
           idioma: lang,
+          // Flag per al trigger handle_new_user: si és true, crea
+          // automàticament un canje de cafè de benvinguda.
+          promo_benvinguda: promoCafe,
         },
         emailRedirectTo: `${window.location.origin}${redirectTo}`,
       },
@@ -72,8 +78,10 @@ function RegisterForm() {
     return (
       <div className="mx-auto max-w-md py-12">
         <div className="card text-center">
-          <div className="mb-4 text-5xl">✉️</div>
-          <h1 className="serif mb-2 text-2xl text-terracota-800">{t.register.success}</h1>
+          <div className="mb-4 text-5xl">{promoCafe ? "☕" : "✉️"}</div>
+          <h1 className="serif mb-2 text-2xl text-terracota-800">
+            {promoCafe ? t.register.successWelcome : t.register.success}
+          </h1>
           <p className="text-oliva-700">{email}</p>
           <Link href="/login" className="btn-primary mt-6">
             {t.nav.login}
@@ -91,6 +99,12 @@ function RegisterForm() {
       {qrCode && (
         <div className="mb-6 rounded-xl border border-terracota-200 bg-terracota-50 px-4 py-3 text-sm text-terracota-800">
           🎁 {t.qr.subtitleGuest}
+        </div>
+      )}
+
+      {promoCafe && !qrCode && (
+        <div className="mb-6 rounded-xl border border-terracota-200 bg-terracota-50 px-4 py-3 text-sm text-terracota-800">
+          ☕ {t.register.bannerWelcome}
         </div>
       )}
 
