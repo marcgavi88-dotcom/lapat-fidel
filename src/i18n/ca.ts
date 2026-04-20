@@ -132,6 +132,20 @@ export const ca = {
     myActivePrizes: "Els meus premis actius",
     viewMyPrizes: "Veure els meus premis",
     activePrizesCount: "{n} codi/s per bescanviar",
+    // Rànquing (Fase 3)
+    ranking: "Top fidels",
+    rankingSubtitle: "Els clients més fidels aquest mes",
+    rankingYou: "Tu",
+    rankingYourPos: "La teva posició: #{n}",
+    rankingOutOfTop: "Encara no ets al top 10",
+    rankingEmpty: "Encara ningú té punts",
+    // Títols (Fase 3)
+    titles: "Els teus títols",
+    titlesSubtitle: "Desbloqueja rangs acumulant punts",
+    titleCurrent: "Ets",
+    titleNextAt: "Següent a {points} punts",
+    titleLocked: "Bloquejat · {points} pts",
+    titleUnlocked: "Desbloquejat",
   },
 
   // Mis premios (canjes actius + historial)
@@ -153,6 +167,19 @@ export const ca = {
     statusRejected: "Rebutjat",
     seeAll: "Veure tots",
     close: "Tancar",
+  },
+
+  // Títols (rangs desbloquejables)
+  titulos: {
+    r0: "Curiós",
+    r50: "Primerenc",
+    r150: "Apreciador",
+    r300: "Habitual",
+    r600: "Fidel",
+    r1000: "Super Fidel",
+    r2000: "Connoisseur",
+    r3500: "Ambaixador",
+    r5000: "Llegenda",
   },
 
   // QR

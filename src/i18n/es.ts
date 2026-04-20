@@ -127,6 +127,20 @@ export const es: Translations = {
     myActivePrizes: "Mis premios activos",
     viewMyPrizes: "Ver mis premios",
     activePrizesCount: "{n} código/s para canjear",
+    // Ranking (Fase 3)
+    ranking: "Top fieles",
+    rankingSubtitle: "Los clientes más fieles este mes",
+    rankingYou: "Tú",
+    rankingYourPos: "Tu posición: #{n}",
+    rankingOutOfTop: "Aún no estás en el top 10",
+    rankingEmpty: "Aún nadie tiene puntos",
+    // Títulos (Fase 3)
+    titles: "Tus títulos",
+    titlesSubtitle: "Desbloquea rangos acumulando puntos",
+    titleCurrent: "Eres",
+    titleNextAt: "Siguiente a {points} puntos",
+    titleLocked: "Bloqueado · {points} pts",
+    titleUnlocked: "Desbloqueado",
   },
 
   misPremios: {
@@ -147,6 +161,19 @@ export const es: Translations = {
     statusRejected: "Rechazado",
     seeAll: "Ver todos",
     close: "Cerrar",
+  },
+
+  // Títulos (rangos desbloqueables)
+  titulos: {
+    r0: "Curioso",
+    r50: "Primerizo",
+    r150: "Apreciador",
+    r300: "Habitual",
+    r600: "Fiel",
+    r1000: "Super Fiel",
+    r2000: "Connoisseur",
+    r3500: "Embajador",
+    r5000: "Leyenda",
   },
 
   qr: {

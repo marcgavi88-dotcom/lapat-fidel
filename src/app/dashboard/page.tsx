@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n, tpl } from "@/i18n/provider";
 import InstallPWA from "@/components/InstallPWA";
+import RankingWidget from "@/components/RankingWidget";
+import TitlesGrid from "@/components/TitlesGrid";
 
 interface Profile {
   id: string;
@@ -203,6 +205,12 @@ export default function DashboardPage() {
           </div>
         </Link>
       )}
+
+      {/* Taulell de títols (rangs desbloquejables) */}
+      <TitlesGrid puntos={profile.puntos_total} />
+
+      {/* Top 10 de fidels */}
+      <RankingWidget />
 
       {/* Activitat recent */}
       <div className="card">
