@@ -23,6 +23,9 @@ interface Profile {
   total_croquetas: number;
   tiradas_ruleta: number;
   tiradas_ruleta_pro: number;
+  fecha_nacimiento: string | null;
+  ultimo_bonus_aniversario: string | null;
+  codigo_invitacion: string | null;
 }
 
 interface Movimiento {
@@ -44,6 +47,10 @@ export default function DashboardPage() {
   const [reviewStatus, setReviewStatus] = useState<ClaimStatus>("available");
   const [storyStatus, setStoryStatus] = useState<ClaimStatus>("available");
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<string | null>(null);
+  const [editarDataObert, setEditarDataObert] = useState(false);
+  const [nuevaFecha, setNuevaFecha] = useState("");
+  const [guardantFecha, setGuardantFecha] = useState(false);
 
   useEffect(() => {
     const supa = createSupabaseBrowser();
@@ -55,10 +62,27 @@ export default function DashboardPage() {
       }
       const { data: prof } = await supa
         .from("profiles")
-        .select("id, nombre, apellidos, puntos_total, puntos_menu, ultimo_giro_ruleta, total_croquetas, tiradas_ruleta, tiradas_ruleta_pro")
+        .select("id, nombre, apellidos, puntos_total, puntos_menu, ultimo_giro_ruleta, total_croquetas, tiradas_ruleta, tiradas_ruleta_pro, fecha_nacimiento, ultimo_bonus_aniversario, codigo_invitacion")
         .eq("id", auth.user.id)
         .single();
       if (prof) setProfile(prof);
+
+      // Intentar reclamar el bonus d'aniversari si correspon
+      if (prof?.fecha_nacimiento) {
+        const { data: bonus } = await supa.rpc("conceder_bonus_aniversario", {
+          p_user_id: auth.user.id,
+        });
+        if (bonus?.ok) {
+          setToast(tpl(t.dashboard.birthdayToast, { n: bonus.puntos }));
+          // Recarreguem el perfil per tenir els punts actualitzats
+          const { data: prof2 } = await supa
+            .from("profiles")
+            .select("id, nombre, apellidos, puntos_total, puntos_menu, ultimo_giro_ruleta, total_croquetas, tiradas_ruleta, tiradas_ruleta_pro, fecha_nacimiento, ultimo_bonus_aniversario, codigo_invitacion")
+            .eq("id", auth.user.id)
+            .single();
+          if (prof2) setProfile(prof2);
+        }
+      }
 
       const { data: movs } = await supa
         .from("movimientos_puntos")
@@ -134,8 +158,58 @@ export default function DashboardPage() {
 
   const siguientePremio = getSiguientePremio(profile.puntos_total, lang);
 
+  const guardarFechaNacimiento = async () => {
+    if (!nuevaFecha) return;
+    setGuardantFecha(true);
+    const supa = createSupabaseBrowser();
+    const { error } = await supa
+      .from("profiles")
+      .update({ fecha_nacimiento: nuevaFecha })
+      .eq("id", profile.id);
+    setGuardantFecha(false);
+    if (error) {
+      setToast(error.message);
+      return;
+    }
+    setProfile({ ...profile, fecha_nacimiento: nuevaFecha });
+    setEditarDataObert(false);
+
+    // Comprovar si ja podem reclamar bonus d'aniversari
+    const { data: bonus } = await supa.rpc("conceder_bonus_aniversario", {
+      p_user_id: profile.id,
+    });
+    if (bonus?.ok) {
+      setToast(tpl(t.dashboard.birthdayToast, { n: bonus.puntos }));
+      const { data: prof2 } = await supa
+        .from("profiles")
+        .select("id, nombre, apellidos, puntos_total, puntos_menu, ultimo_giro_ruleta, total_croquetas, tiradas_ruleta, tiradas_ruleta_pro, fecha_nacimiento, ultimo_bonus_aniversario, codigo_invitacion")
+        .eq("id", profile.id)
+        .single();
+      if (prof2) setProfile(prof2);
+    } else {
+      setToast(t.dashboard.birthdaySaved);
+    }
+  };
+
   return (
     <div className="space-y-6 py-6">
+      {/* Toast */}
+      {toast && (
+        <div className="fixed inset-x-0 top-20 z-50 mx-auto flex max-w-md justify-center px-4">
+          <div className="flex items-center gap-3 rounded-xl border border-terracota-300 bg-white px-4 py-3 text-sm text-terracota-800 shadow-lg">
+            <span>🎉</span>
+            <span className="flex-1">{toast}</span>
+            <button
+              onClick={() => setToast(null)}
+              className="rounded-full p-1 text-oliva-500 hover:text-oliva-700"
+              aria-label="close"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Saludo */}
       <div>
         <p className="text-sm text-oliva-600">{t.dashboard.welcome}</p>
@@ -324,6 +398,67 @@ export default function DashboardPage() {
           </span>
         </div>
       </Link>
+
+      {/* Apadrina amics */}
+      <Link href="/invita" className="block">
+        <div className="card flex items-center justify-between bg-gradient-to-r from-crema-50 to-terracota-50 transition hover:shadow-md">
+          <div>
+            <h2 className="serif text-xl text-terracota-800">👯 {t.dashboard.inviteTile}</h2>
+            <p className="mt-1 text-sm text-oliva-700">
+              {profile.codigo_invitacion
+                ? tpl(t.dashboard.inviteTileWithCode, { code: profile.codigo_invitacion })
+                : t.dashboard.inviteTileSubtitle}
+            </p>
+          </div>
+          <span className="text-2xl">→</span>
+        </div>
+      </Link>
+
+      {/* Data d'aniversari (configurar / editar) */}
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="serif text-xl text-terracota-800">🎂 {t.dashboard.birthdayTile}</h2>
+            <p className="mt-1 text-sm text-oliva-700">
+              {profile.fecha_nacimiento
+                ? tpl(t.dashboard.birthdaySet, {
+                    date: new Date(profile.fecha_nacimiento).toLocaleDateString(
+                      lang === "ca" ? "ca-ES" : "es-ES",
+                      { day: "numeric", month: "long" }
+                    ),
+                  })
+                : t.dashboard.birthdayNotSet}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setNuevaFecha(profile.fecha_nacimiento || "");
+              setEditarDataObert((v) => !v);
+            }}
+            className="rounded-full border border-terracota-200 px-4 py-2 text-sm text-terracota-700 hover:bg-terracota-50"
+          >
+            {profile.fecha_nacimiento ? t.dashboard.birthdayEdit : t.dashboard.birthdayAdd}
+          </button>
+        </div>
+        {editarDataObert && (
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <input
+              type="date"
+              value={nuevaFecha}
+              onChange={(e) => setNuevaFecha(e.target.value)}
+              max={new Date().toISOString().split("T")[0]}
+              className="input-field flex-1"
+            />
+            <button
+              onClick={guardarFechaNacimiento}
+              disabled={guardantFecha || !nuevaFecha}
+              className="btn-primary disabled:opacity-50"
+            >
+              {guardantFecha ? t.common.loading : t.dashboard.birthdaySave}
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Taulell de títols (rangs desbloquejables) */}
       <TitlesGrid puntos={profile.puntos_total} />

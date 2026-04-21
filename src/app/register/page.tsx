@@ -12,6 +12,7 @@ function RegisterForm() {
   const searchParams = useSearchParams();
   const qrCode = searchParams.get("qr"); // si venimos de un QR, lo guardamos
   const promoCafe = searchParams.get("promo") === "cafe"; // QR físic de benvinguda
+  const refCode = (searchParams.get("ref") || "").toUpperCase().trim();
   const redirectTo =
     searchParams.get("redirect") ||
     (qrCode ? `/qr/${qrCode}` : promoCafe ? "/rewards" : "/dashboard");
@@ -21,6 +22,8 @@ function RegisterForm() {
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [codigoInvitacion, setCodigoInvitacion] = useState(refCode);
   const [acceptaPromociones, setAcceptaPromociones] = useState(false);
   const [acceptaTerminos, setAcceptaTerminos] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,6 +52,10 @@ function RegisterForm() {
           telefono,
           acepta_promociones: acceptaPromociones,
           idioma: lang,
+          fecha_nacimiento: fechaNacimiento || null,
+          codigo_invitacion: codigoInvitacion
+            ? codigoInvitacion.toUpperCase().trim()
+            : null,
           // Flag per al trigger handle_new_user: si és true, crea
           // automàticament un canje de cafè de benvinguda.
           promo_benvinguda: promoCafe,
@@ -136,6 +143,35 @@ function RegisterForm() {
           <label className="mb-1 block text-sm font-medium text-oliva-800">{t.register.password}</label>
           <input required minLength={6} type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="input-field" />
           <p className="mt-1 text-xs text-oliva-600">{t.register.passwordMin}</p>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-oliva-800">
+            {t.register.fechaNacimiento}
+          </label>
+          <input
+            type="date"
+            value={fechaNacimiento}
+            onChange={(e) => setFechaNacimiento(e.target.value)}
+            className="input-field"
+            max={new Date().toISOString().split("T")[0]}
+          />
+          <p className="mt-1 text-xs text-oliva-600">{t.register.fechaNacimientoHint}</p>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-oliva-800">
+            {t.register.codigoInvitacion}
+          </label>
+          <input
+            type="text"
+            value={codigoInvitacion}
+            onChange={(e) => setCodigoInvitacion(e.target.value.toUpperCase())}
+            maxLength={8}
+            className="input-field uppercase tracking-widest"
+            placeholder="XXXXXX"
+          />
+          <p className="mt-1 text-xs text-oliva-600">{t.register.codigoInvitacionHint}</p>
         </div>
 
         <label className="flex items-start gap-2 rounded-lg bg-white p-3 text-sm">

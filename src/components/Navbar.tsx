@@ -93,6 +93,7 @@ export function Navbar() {
                 <Link href="/roulette" className="btn-ghost">{t.nav.roulette}</Link>
                 <Link href="/ressenya" className="btn-ghost">⭐ {t.nav.ressenya}</Link>
                 <Link href="/historia" className="btn-ghost">📸 {t.nav.historia}</Link>
+                <Link href="/invita" className="btn-ghost">👯 {t.nav.invita}</Link>
                 <Link href="/news" className="btn-ghost">{t.nav.news}</Link>
                 {isAdmin && (
                   <Link href="/admin" className="btn-ghost text-azulmar-700">{t.nav.admin}</Link>
@@ -141,6 +142,7 @@ export function Navbar() {
               <Link href="/roulette" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">{t.nav.roulette}</Link>
               <Link href="/ressenya" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">⭐ {t.nav.ressenya}</Link>
               <Link href="/historia" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">📸 {t.nav.historia}</Link>
+              <Link href="/invita" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-oliva-100">👯 {t.nav.invita}</Link>
               <a
                 href={BOOK_URL}
                 target="_blank"

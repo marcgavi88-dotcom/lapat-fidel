@@ -14,6 +14,7 @@ export const es: Translations = {
     news: "Noticias",
     ressenya: "Reseña",
     historia: "Historia IG",
+    invita: "Apadrina",
     reservar: "Reservar mesa",
     web: "Web",
     scan: "Escanear QR",
@@ -83,6 +84,10 @@ export const es: Translations = {
     email: "Correo electrónico",
     password: "Contraseña",
     passwordMin: "Mínimo 6 caracteres",
+    fechaNacimiento: "Fecha de nacimiento (opcional)",
+    fechaNacimientoHint: "Nos la dices y te regalamos +75 puntos el día de tu cumpleaños.",
+    codigoInvitacion: "Código de amigo (opcional)",
+    codigoInvitacionHint: "Si un amigo te ha invitado, pon su código y ambos ganaréis 50 puntos.",
     terms: "Acepto los términos y condiciones",
     promotions: "Acepto recibir promociones y novedades de L'Àpat del Prat por correo electrónico",
     bannerWelcome:
@@ -167,6 +172,19 @@ export const es: Translations = {
     actionsSubtitle: "Gestiona tu reserva o explora nuestra web",
     actionsBookTable: "Reservar mesa",
     actionsVisitWeb: "Ir a la web",
+    // Cumpleaños (Fase 7)
+    birthdayTile: "Cumpleaños",
+    birthdayNotSet: "Dinos qué día cumples años y te regalamos 75 puntos.",
+    birthdaySet: "Lo celebras el {date} — ¡te regalamos +75 puntos esos días!",
+    birthdayAdd: "Añadir",
+    birthdayEdit: "Editar",
+    birthdaySave: "Guardar",
+    birthdaySaved: "Fecha de nacimiento guardada. ¡Gracias!",
+    birthdayToast: "¡Feliz cumpleaños! +{n} puntos recién ingresados 🎂",
+    // Apadrinar amigos (Fase 8)
+    inviteTile: "Apadrina amigos",
+    inviteTileSubtitle: "Comparte tu código y ganaréis 50 puntos cada uno.",
+    inviteTileWithCode: "Tu código: {code} · ganáis 50 pts cada uno",
   },
 
   // Reseña de Google (Fase 4)
@@ -427,6 +445,32 @@ export const es: Translations = {
     desktopTitle: "Cómo instalarla en el ordenador",
     desktopStep1: "Haz clic en el icono de instalación ⊕ de la barra de direcciones (o menú ⋮ → 'Instalar L'Àpat Fidel')",
     desktopStep2: "Confirma la instalación y la app quedará en tu escritorio.",
+  },
+
+  // Apadrinar amigos (Fase 8)
+  invita: {
+    title: "Apadrina amigos",
+    subtitle: "Comparte tu código. Cuando un amigo se registre y llegue a 200 puntos, recibiréis 50 puntos cada uno.",
+    yourCode: "Tu código de amigo",
+    copyCode: "Copiar código",
+    copyLink: "Copiar enlace",
+    copied: "¡Copiado!",
+    ruleLine1: "1. Comparte tu código o enlace con un amigo.",
+    ruleLine2: "2. Que se apunte al club con tu código.",
+    ruleLine3: "3. Cuando acumule 200 puntos (¡sin trampas!), recibiréis 50 pts cada uno.",
+    shareLinkTitle: "Enlace directo de registro",
+    shareButton: "Compartir",
+    shareTitle: "Te apadrino en L'Àpat Fidel",
+    shareText: "¡Regístrate en el club de L'Àpat del Prat con mi código y ganaréis 50 puntos cada uno!",
+    pending: "Pendientes",
+    unlocked: "Desbloqueadas",
+    historyTitle: "Mis apadrinados",
+    historyEmpty: "Aún no has apadrinado a nadie. ¡Comparte tu código y empieza a ganar puntos!",
+    anonymous: "Amigo/Amiga",
+    rowPending: "Pendiente · le faltan {n} puntos",
+    rowUnlocked: "Desbloqueada el {date} · +50 pts",
+    fraudNote:
+      "Los puntos solo se reparten con puntos reales (QR de tickets), no con cuentas falsas.",
   },
 
   common: {
