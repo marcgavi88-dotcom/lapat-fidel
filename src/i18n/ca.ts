@@ -111,6 +111,13 @@ export const ca = {
     registerHere: "Registra't aquí",
   },
 
+  // Catàleg de premis (visible a /login)
+  premiosPreview: {
+    title: "Premis que pots aconseguir",
+    subtitle: "Acumula punts cada vegada que vinguis a menjar",
+    footer: "Registra't per començar a sumar punts",
+  },
+
   // Dashboard
   dashboard: {
     welcome: "Hola",

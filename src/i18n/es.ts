@@ -107,6 +107,13 @@ export const es: Translations = {
     registerHere: "Regístrate aquí",
   },
 
+  // Catálogo de premios (visible en /login)
+  premiosPreview: {
+    title: "Premios que puedes conseguir",
+    subtitle: "Acumula puntos cada vez que vengas a comer",
+    footer: "Regístrate para empezar a sumar puntos",
+  },
+
   dashboard: {
     welcome: "Hola",
     yourPoints: "Tus puntos",
