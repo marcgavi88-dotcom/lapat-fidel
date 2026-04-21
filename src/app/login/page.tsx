@@ -12,11 +12,12 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const qrCode = searchParams.get("qr");
   const redirectTo = searchParams.get("redirect") || (qrCode ? `/qr/${qrCode}` : "/dashboard");
+  const callbackError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(callbackError ?? "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ function LoginForm() {
     }
     const supa = createSupabaseBrowser();
     const { error: resetError } = await supa.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: `${window.location.origin}/auth/callback?next=/login`,
     });
     if (resetError) setError(resetError.message);
     else setError("Revisa el teu correu / Revisa tu correo");

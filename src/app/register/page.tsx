@@ -53,7 +53,9 @@ function RegisterForm() {
           // automàticament un canje de cafè de benvinguda.
           promo_benvinguda: promoCafe,
         },
-        emailRedirectTo: `${window.location.origin}${redirectTo}`,
+        // Passem pel nostre route handler perquè intercanviï el ?code= per
+        // una sessió abans d'enviar l'usuari a la seva destinació final.
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
       },
     });
 
