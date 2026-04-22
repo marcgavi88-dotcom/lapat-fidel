@@ -380,7 +380,9 @@ export const ca = {
     qrGenerate: "Generar QR",
     qrPoints: "Punts assignats",
     qrPrint: "Imprimir tiquet",
-    qrDownload: "Descarregar",
+    qrDownload: "Descarregar tiquet",
+    qrShareToPhotos: "📲 Desar a Fotos",
+    qrPrintHelp: "Per imprimir amb la Munbyn: desa la imatge a Fotos, obre l'app Munbyn Print → Imprimir foto → tria el tiquet.",
     qrScanInstructions: "Escaneja aquest QR amb la càmera del mòbil",
     qrValidFor: "Val per",
 

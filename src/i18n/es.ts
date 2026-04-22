@@ -368,7 +368,9 @@ export const es: Translations = {
     qrGenerate: "Generar QR",
     qrPoints: "Puntos asignados",
     qrPrint: "Imprimir ticket",
-    qrDownload: "Descargar",
+    qrDownload: "Descargar ticket",
+    qrShareToPhotos: "📲 Guardar en Fotos",
+    qrPrintHelp: "Para imprimir con la Munbyn: guarda la imagen en Fotos, abre la app Munbyn Print → Imprimir foto → elige el ticket.",
     qrScanInstructions: "Escanea este QR con la cámara del móvil",
     qrValidFor: "Vale por",
 
