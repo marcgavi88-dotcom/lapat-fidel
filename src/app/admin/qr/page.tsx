@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
-import { useI18n } from "@/i18n/provider";
+import { useI18n, tpl } from "@/i18n/provider";
 import { buildEposXml, sendToEpsonPrinter } from "@/lib/epos-print";
 
 const EPSON_PRINTER_IP = "192.168.1.147";
@@ -18,6 +18,8 @@ interface QrGenerado {
   expira_at: string;
   usado: boolean;
   created_at: string;
+  max_usos?: number;
+  usos?: number;
 }
 
 // 576 px = 72 mm @ 203 dpi → mida òptima per impressores tèrmiques de 80 mm
@@ -51,6 +53,8 @@ async function buildTicketCanvas(opts: {
   codigo: string;
   pointsLabel: string;
   validForLabel: string;
+  maxUsos?: number;
+  sharedLabel?: string;
 }): Promise<HTMLCanvasElement> {
   const W = TICKET_WIDTH;
   const PAD = 28;
@@ -116,8 +120,16 @@ async function buildTicketCanvas(opts: {
     `Consumició: ${opts.importe.toFixed(2)}€`,
     "20px sans-serif",
     22,
-    14,
+    opts.maxUsos && opts.maxUsos > 1 ? 6 : 14,
   );
+  if (opts.maxUsos && opts.maxUsos > 1 && opts.sharedLabel) {
+    addText(
+      opts.sharedLabel,
+      "bold 20px sans-serif",
+      22,
+      14,
+    );
+  }
   if (opts.croquetas > 0) {
     addDivider(0, 14);
     addText(
@@ -182,6 +194,7 @@ export default function AdminQrPage() {
   const { t } = useI18n();
   const [importe, setImporte] = useState("");
   const [croquetas, setCroquetas] = useState("");
+  const [comensales, setComensales] = useState("1");
   const [generando, setGenerando] = useState(false);
   const [ultimoQr, setUltimoQr] = useState<QrGenerado | null>(null);
   const [qrImage, setQrImage] = useState<string>("");
@@ -206,6 +219,7 @@ export default function AdminQrPage() {
 
   const handleGenerar = async () => {
     if (!importe || Number(importe) <= 0) return;
+    const comensalesNum = Math.max(1, Math.min(50, Math.floor(Number(comensales) || 1)));
     setGenerando(true);
     try {
       const res = await fetch("/api/admin/generate-qr", {
@@ -214,6 +228,7 @@ export default function AdminQrPage() {
         body: JSON.stringify({
           importe: Number(importe),
           croquetas: Number(croquetas) || 0,
+          comensales: comensalesNum,
         }),
       });
       const json = await res.json();
@@ -224,6 +239,7 @@ export default function AdminQrPage() {
         setQrImage(img);
         setImporte("");
         setCroquetas("");
+        setComensales("1");
         cargarHistorial();
       } else {
         alert(json.error || t.common.error);
@@ -243,21 +259,37 @@ export default function AdminQrPage() {
     setPrinting(true);
     setPrintStatus(null);
     try {
+      const maxUsos = ultimoQr.max_usos ?? 1;
+      const copies = Math.max(1, maxUsos);
       const xml = await buildEposXml({
         qrDataUrl: qrImage,
         titleLine: "L'APAT DEL PRAT",
         subtitleLine: "Arrossos i cuina mediterrania",
         pointsLine: `${t.admin.qrValidFor.toUpperCase()} ${ultimoQr.puntos} ${t.dashboard.points.toUpperCase()}`,
         amountLine: `Consumicio: ${ultimoQr.importe_euros.toFixed(2)} EUR`,
+        sharedLine:
+          maxUsos > 1
+            ? `Compartit entre ${maxUsos} comensals`
+            : undefined,
         croquetasLine:
           ultimoQr.croquetas > 0 ? `+${ultimoQr.croquetas} croquetes` : undefined,
         fallbackUrlLine: `${siteHostname}/qr/${ultimoQr.codigo}`,
         validUntilLine: `Valid fins: ${new Date(ultimoQr.expira_at).toLocaleString("ca-ES", { dateStyle: "short", timeStyle: "short" })}`,
         footerLine: "Gracies! / Gracias!",
       });
-      const res = await sendToEpsonPrinter(EPSON_PRINTER_IP, xml, {
-        useHttps: true,
-      });
+      // Si és multi-comensal, imprimim una còpia per comensal
+      let firstRes: Awaited<ReturnType<typeof sendToEpsonPrinter>> | null = null;
+      for (let i = 0; i < copies; i++) {
+        const res = await sendToEpsonPrinter(EPSON_PRINTER_IP, xml, {
+          useHttps: true,
+        });
+        if (i === 0) firstRes = res;
+        if (!res.success) {
+          firstRes = res;
+          break;
+        }
+      }
+      const res = firstRes!;
       if (res.success) {
         setPrintStatus("ok");
       } else {
@@ -316,12 +348,17 @@ export default function AdminQrPage() {
     }
   };
 
-  const puntosPreview = importe ? Math.round(Number(importe) * 2.5) : 0;
+  const comensalesPreview = Math.max(1, Math.min(50, Math.floor(Number(comensales) || 1)));
+  const puntosPreviewTotal = importe ? Math.round(Number(importe) * 2.5) : 0;
+  const puntosPreview = importe
+    ? Math.round((Number(importe) / comensalesPreview) * 2.5)
+    : 0;
   const qrUrl = ultimoQr ? `${siteUrl}/qr/${ultimoQr.codigo}` : "";
   const siteHostname = siteUrl.replace(/^https?:\/\//, "");
 
   const buildTicketBlob = async (): Promise<{ blob: Blob; filename: string } | null> => {
     if (!ultimoQr) return null;
+    const maxUsos = ultimoQr.max_usos ?? 1;
     const canvas = await buildTicketCanvas({
       qrUrl,
       puntos: ultimoQr.puntos,
@@ -332,6 +369,9 @@ export default function AdminQrPage() {
       codigo: ultimoQr.codigo,
       pointsLabel: t.dashboard.points,
       validForLabel: t.admin.qrValidFor,
+      maxUsos,
+      sharedLabel:
+        maxUsos > 1 ? tpl(t.admin.qrSharedTotal, { n: maxUsos }) : undefined,
     });
     const blob = await canvasToBlob(canvas);
     return { blob, filename: `tiquet-${ultimoQr.codigo}.png` };
@@ -391,8 +431,29 @@ export default function AdminQrPage() {
                 placeholder="23.50"
               />
               <p className="mt-1 text-sm text-oliva-600">
-                = <strong>{puntosPreview} {t.dashboard.points}</strong> (2,5 × €)
+                = <strong>{puntosPreviewTotal} {t.dashboard.points}</strong> (2,5 × €)
               </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">{t.admin.qrComensales}</label>
+              <input
+                type="number"
+                step="1"
+                min="1"
+                max="50"
+                value={comensales}
+                onChange={(e) => setComensales(e.target.value)}
+                className="input-field"
+                placeholder="1"
+              />
+              <p className="mt-1 text-sm text-oliva-600">{t.admin.qrComensalesHint}</p>
+              {comensalesPreview > 1 && importe && (
+                <p className="mt-1 text-sm font-medium text-terracota-700">
+                  → {t.admin.qrPointsPerScan}: <strong>{puntosPreview} {t.dashboard.points}</strong> ×{" "}
+                  {comensalesPreview} = {puntosPreview * comensalesPreview} {t.dashboard.points}
+                </p>
+              )}
             </div>
 
             <div>
@@ -428,7 +489,9 @@ export default function AdminQrPage() {
               >
                 {printing
                   ? t.common.loading
-                  : `🖨️ ${t.admin.qrPrintThermal}`}
+                  : (ultimoQr.max_usos ?? 1) > 1
+                    ? `🖨️ ${tpl(t.admin.qrTicketCopies, { n: ultimoQr.max_usos ?? 1 })}`
+                    : `🖨️ ${t.admin.qrPrintThermal}`}
               </button>
               {printStatus === "ok" && (
                 <p className="text-xs text-oliva-700">
@@ -490,6 +553,11 @@ export default function AdminQrPage() {
                 <div style={{ fontSize: "9pt" }}>
                   Consumició: {ultimoQr.importe_euros.toFixed(2)}€
                 </div>
+                {(ultimoQr.max_usos ?? 1) > 1 && (
+                  <div style={{ fontSize: "9pt", fontWeight: "bold", marginTop: "1mm" }}>
+                    {tpl(t.admin.qrSharedTotal, { n: ultimoQr.max_usos ?? 1 })}
+                  </div>
+                )}
 
                 {ultimoQr.croquetas > 0 && (
                   <>
@@ -539,6 +607,7 @@ export default function AdminQrPage() {
                 <th className="py-2">Importe</th>
                 <th className="py-2">Puntos</th>
                 <th className="py-2">🥟</th>
+                <th className="py-2">{t.admin.qrUsageColumn}</th>
                 <th className="py-2">Estado</th>
                 <th className="py-2"></th>
               </tr>
@@ -546,6 +615,8 @@ export default function AdminQrPage() {
             <tbody>
               {historial.map((q) => {
                 const expirado = new Date(q.expira_at) < new Date();
+                const maxUsos = q.max_usos ?? 1;
+                const usos = q.usos ?? 0;
                 return (
                   <tr key={q.id} className="border-b border-crema-100">
                     <td className="py-2 text-xs text-oliva-600">
@@ -553,15 +624,27 @@ export default function AdminQrPage() {
                     </td>
                     <td className="py-2 font-mono">{q.codigo}</td>
                     <td className="py-2">{q.importe_euros.toFixed(2)}€</td>
-                    <td className="py-2 font-semibold">{q.puntos}</td>
+                    <td className="py-2 font-semibold">
+                      {q.puntos}
+                      {maxUsos > 1 && (
+                        <span className="ml-1 text-xs font-normal text-oliva-600">
+                          × {maxUsos}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2">{q.croquetas ?? 0}</td>
+                    <td className="py-2 text-xs">
+                      {usos}/{maxUsos}
+                    </td>
                     <td className="py-2">
                       {q.usado ? (
                         <span className="text-oliva-600">✓ Usado</span>
                       ) : expirado ? (
                         <span className="text-red-600">Caducado</span>
                       ) : (
-                        <span className="text-terracota-600">Pendiente</span>
+                        <span className="text-terracota-600">
+                          {maxUsos > 1 ? `Pendent (${maxUsos - usos} restants)` : "Pendiente"}
+                        </span>
                       )}
                     </td>
                     <td className="py-2 text-right">

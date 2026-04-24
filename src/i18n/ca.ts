@@ -306,8 +306,10 @@ export const ca = {
     errorUsed: "Aquest QR ja ha estat utilitzat",
     errorExpired: "Aquest QR ha caducat",
     errorNotFound: "QR no trobat",
+    errorAlreadyClaimed: "Ja has reclamat aquest QR anteriorment",
     pointsWaiting: "Tens {points} punts esperant-te",
     closeToReward: "T'apropes a: {reward}",
+    sharedBadge: "Compartit · {remaining}/{total} escanejos restants",
   },
 
   // Premios
@@ -377,6 +379,13 @@ export const ca = {
     qrAmount: "Import consumició (€)",
     qrIsMenu: "És un menú del dia",
     qrCroquetas: "Croquetes consumides",
+    qrComensales: "Nombre de comensals",
+    qrComensalesHint:
+      "Si són més d'1, el QR podrà ser escanejat per cada comensal (1 sol cop cadascun) i els punts es repartiran a parts iguals.",
+    qrPointsPerScan: "Punts per comensal",
+    qrSharedTotal: "Compartit entre {n} comensals",
+    qrUsageColumn: "Usos",
+    qrTicketCopies: "Imprimir {n} còpies (una per comensal)",
     qrGenerate: "Generar QR",
     qrPoints: "Punts assignats",
     qrPrint: "Imprimir (navegador)",

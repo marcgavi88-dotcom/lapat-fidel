@@ -299,8 +299,10 @@ export const es: Translations = {
     errorUsed: "Este QR ya ha sido utilizado",
     errorExpired: "Este QR ha caducado",
     errorNotFound: "QR no encontrado",
+    errorAlreadyClaimed: "Ya has reclamado este QR anteriormente",
     pointsWaiting: "Tienes {points} puntos esperándote",
     closeToReward: "Te acercas a: {reward}",
+    sharedBadge: "Compartido · {remaining}/{total} escaneos restantes",
   },
 
   rewards: {
@@ -365,6 +367,13 @@ export const es: Translations = {
     qrAmount: "Importe consumición (€)",
     qrIsMenu: "Es un menú del día",
     qrCroquetas: "Croquetas consumidas",
+    qrComensales: "Número de comensales",
+    qrComensalesHint:
+      "Si hay más de 1, el QR podrá ser escaneado por cada comensal (1 sola vez cada uno) y los puntos se repartirán a partes iguales.",
+    qrPointsPerScan: "Puntos por comensal",
+    qrSharedTotal: "Compartido entre {n} comensales",
+    qrUsageColumn: "Usos",
+    qrTicketCopies: "Imprimir {n} copias (una por comensal)",
     qrGenerate: "Generar QR",
     qrPoints: "Puntos asignados",
     qrPrint: "Imprimir (navegador)",

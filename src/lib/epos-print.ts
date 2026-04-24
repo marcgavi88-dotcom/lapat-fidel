@@ -21,6 +21,7 @@ export interface EposTicketData {
   subtitleLine: string;
   pointsLine: string; // e.g. "VAL PER 50 PUNTS"
   amountLine: string; // e.g. "Consumicio: 20.00 EUR"
+  sharedLine?: string; // e.g. "Compartit entre 4 comensals"
   croquetasLine?: string; // e.g. "+5 croquetes"
   fallbackUrlLine: string;
   validUntilLine: string;
@@ -115,6 +116,10 @@ export async function buildEposXml(t: EposTicketData): Promise<string> {
       ].join("\n")
     : "";
 
+  const sharedXml = t.sharedLine
+    ? `      <text align="center" width="1" height="1" em="true">${escXml(t.sharedLine)}&#10;</text>\n`
+    : "";
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
   <s:Body>
@@ -130,7 +135,7 @@ export async function buildEposXml(t: EposTicketData): Promise<string> {
       <text align="center">${DIV_A}&#10;</text>
       <text align="center" width="2" height="2" em="true">${escXml(t.pointsLine)}&#10;</text>
       <text align="center" width="1" height="1" em="false">${escXml(t.amountLine)}&#10;</text>
-${croq}
+${sharedXml}${croq}
       <feed/>
       <text align="center" font="font_b">${DIV_B}&#10;</text>
       <text align="center" font="font_b">Si la camera no funciona:&#10;</text>

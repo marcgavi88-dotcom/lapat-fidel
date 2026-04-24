@@ -19,19 +19,28 @@ export async function POST(req: NextRequest) {
   const { data: prof } = await supa.from("profiles").select("is_admin").eq("id", auth.user.id).single();
   if (!prof?.is_admin) return NextResponse.json({ ok: false, error: "not_admin" }, { status: 403 });
 
-  const { importe, croquetas } = await req.json();
+  const { importe, croquetas, comensales } = await req.json();
   const importeNum = Number(importe);
   if (!importeNum || importeNum <= 0) {
     return NextResponse.json({ ok: false, error: "importe_invalido" }, { status: 400 });
   }
 
-  // Croquetes: enter ≥ 0 (per defecte 0). Les capem a 999 per prudència.
+  // Comensals: enter ≥ 1 (per defecte 1). Cap a 50 per prudència.
+  let comensalesNum = Number.isFinite(Number(comensales)) ? Math.floor(Number(comensales)) : 1;
+  if (comensalesNum < 1) comensalesNum = 1;
+  if (comensalesNum > 50) comensalesNum = 50;
+
+  // Croquetes TOTALS del tiquet: enter ≥ 0. Es divideixen entre els comensals igual que l'import.
   let croquetasNum = Number.isFinite(Number(croquetas)) ? Math.floor(Number(croquetas)) : 0;
   if (croquetasNum < 0) croquetasNum = 0;
   if (croquetasNum > 999) croquetasNum = 999;
 
-  // 2.5 puntos por euro, redondeado
-  const puntos = Math.round(importeNum * 2.5);
+  // Punts i croquetes PER ESCANEIG (cada comensal s'endú el seu tall).
+  // 2.5 punts per euro, redondeat. Amb N comensals, cadascú rep round((importe/N) * 2.5).
+  const importePerEscaneig = importeNum / comensalesNum;
+  const puntosPerEscaneig = Math.round(importePerEscaneig * 2.5);
+  const croquetasPerEscaneig = Math.floor(croquetasNum / comensalesNum);
+
   const codigo = generarCodigo();
   const expiraAt = new Date();
   expiraAt.setHours(expiraAt.getHours() + 72); // 72h de validez
@@ -42,11 +51,13 @@ export async function POST(req: NextRequest) {
     .insert({
       codigo,
       importe_euros: importeNum,
-      puntos,
-      croquetas: croquetasNum,
+      puntos: puntosPerEscaneig,
+      croquetas: croquetasPerEscaneig,
       es_menu: false, // deprecated: ja no s'utilitza
       expira_at: expiraAt.toISOString(),
       created_by: auth.user.id,
+      max_usos: comensalesNum,
+      usos: 0,
     })
     .select()
     .single();

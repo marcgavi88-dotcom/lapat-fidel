@@ -14,6 +14,9 @@ interface QrInfo {
   es_menu: boolean;
   usado: boolean;
   expira_at: string;
+  max_usos: number;
+  usos: number;
+  restants: number;
 }
 
 export default function QrLanding() {
@@ -108,6 +111,7 @@ export default function QrLanding() {
     let mensaje = t.qr.errorNotFound;
     if (error === "qr_ya_usado") mensaje = t.qr.errorUsed;
     else if (error === "qr_caducado") mensaje = t.qr.errorExpired;
+    else if (error === "qr_ya_reclamado") mensaje = t.qr.errorAlreadyClaimed;
     return (
       <div className="mx-auto max-w-md py-10">
         <div className="card text-center">
@@ -141,6 +145,14 @@ export default function QrLanding() {
           <p className="text-sm uppercase tracking-wider text-crema-100">🎁 {t.qr.title}</p>
           <div className="mt-3 serif text-7xl font-semibold">+{qrInfo.puntos}</div>
           <p className="mt-1 text-lg text-crema-100">{t.dashboard.points}</p>
+          {qrInfo.max_usos > 1 && (
+            <p className="mt-4 inline-block rounded-full bg-white/15 px-3 py-1 text-xs text-crema-100">
+              {tpl(t.qr.sharedBadge, {
+                total: qrInfo.max_usos,
+                remaining: qrInfo.restants,
+              })}
+            </p>
+          )}
           {siguientePremio && (
             <p className="mt-4 text-sm text-crema-100">
               {tpl(t.qr.closeToReward, { reward: siguientePremio.nombre })}
