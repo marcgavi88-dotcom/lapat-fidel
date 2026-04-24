@@ -392,6 +392,12 @@ export const ca = {
     qrPrintHelp: "Si la impressora no respon: desa a Fotos o descarrega la imatge i imprimeix-la manualment.",
     qrScanInstructions: "Escaneja aquest QR amb la càmera del mòbil",
     qrValidFor: "Val per",
+    qrDelete: "Esborrar",
+    qrDeleteConfirm:
+      "Segur que vols esborrar el QR {codigo}? Aquesta acció és irreversible. Només es poden esborrar QRs no bescanviats.",
+    qrDeleteErrorUsed:
+      "No es pot esborrar: aquest QR ja s'ha bescanviat. Els punts ja s'han atorgat.",
+    qrDeleteErrorGeneric: "No s'ha pogut esborrar el QR. Torna-ho a provar.",
 
     // Clientes
     searchClient: "Cercar client...",

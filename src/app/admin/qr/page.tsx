@@ -187,6 +187,7 @@ export default function AdminQrPage() {
   const [qrImage, setQrImage] = useState<string>("");
   const [historial, setHistorial] = useState<QrGenerado[]>([]);
   const [siteUrl, setSiteUrl] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     setSiteUrl(window.location.origin);
@@ -277,6 +278,42 @@ export default function AdminQrPage() {
 
   const handlePrintBrowser = () => {
     window.print();
+  };
+
+  const handleDeleteQr = async (qr: QrGenerado) => {
+    if (qr.usado) {
+      alert(t.admin.qrDeleteErrorUsed);
+      return;
+    }
+    const confirmMsg = t.admin.qrDeleteConfirm.replace("{codigo}", qr.codigo);
+    if (!confirm(confirmMsg)) return;
+    setDeletingId(qr.id);
+    try {
+      const res = await fetch("/api/admin/delete-qr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ qr_id: qr.id }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        // Si és el QR que estem mostrant en el preview, netegem.
+        if (ultimoQr?.id === qr.id) {
+          setUltimoQr(null);
+          setQrImage("");
+        }
+        await cargarHistorial();
+      } else {
+        alert(
+          json.error === "qr_ja_usat"
+            ? t.admin.qrDeleteErrorUsed
+            : t.admin.qrDeleteErrorGeneric,
+        );
+      }
+    } catch {
+      alert(t.admin.qrDeleteErrorGeneric);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const puntosPreview = importe ? Math.round(Number(importe) * 2.5) : 0;
@@ -503,6 +540,7 @@ export default function AdminQrPage() {
                 <th className="py-2">Puntos</th>
                 <th className="py-2">🥟</th>
                 <th className="py-2">Estado</th>
+                <th className="py-2"></th>
               </tr>
             </thead>
             <tbody>
@@ -524,6 +562,20 @@ export default function AdminQrPage() {
                         <span className="text-red-600">Caducado</span>
                       ) : (
                         <span className="text-terracota-600">Pendiente</span>
+                      )}
+                    </td>
+                    <td className="py-2 text-right">
+                      {!q.usado && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteQr(q)}
+                          disabled={deletingId === q.id}
+                          className="text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+                          aria-label={t.admin.qrDelete}
+                          title={t.admin.qrDelete}
+                        >
+                          {deletingId === q.id ? "…" : `🗑️ ${t.admin.qrDelete}`}
+                        </button>
                       )}
                     </td>
                   </tr>

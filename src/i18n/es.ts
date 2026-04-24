@@ -380,6 +380,12 @@ export const es: Translations = {
     qrPrintHelp: "Si la impresora no responde: guarda en Fotos o descarga la imagen e imprímela manualmente.",
     qrScanInstructions: "Escanea este QR con la cámara del móvil",
     qrValidFor: "Vale por",
+    qrDelete: "Eliminar",
+    qrDeleteConfirm:
+      "¿Seguro que quieres eliminar el QR {codigo}? Esta acción es irreversible. Solo se pueden eliminar QRs no canjeados.",
+    qrDeleteErrorUsed:
+      "No se puede eliminar: este QR ya se ha canjeado. Los puntos ya han sido otorgados.",
+    qrDeleteErrorGeneric: "No se ha podido eliminar el QR. Inténtalo de nuevo.",
 
     searchClient: "Buscar cliente...",
     totalClients: "Total clientes",
