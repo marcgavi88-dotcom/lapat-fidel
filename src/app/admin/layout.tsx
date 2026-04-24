@@ -6,12 +6,22 @@ import { usePathname, useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n } from "@/i18n/provider";
 
+// Seccions que un admin limitat (p.ex. encarregats de sala) NO pot veure.
+// Les mantenim centralitzades aquí perquè tant els enllaços com la
+// redirecció per URL directa vagin sincronitzats.
+const RESTRICTED_FOR_LIMITED = new Set<string>([
+  "/admin/clients",
+  "/admin/news",
+  "/admin/newsletter",
+]);
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [ok, setOk] = useState(false);
+  const [limited, setLimited] = useState(false);
 
   useEffect(() => {
     const supa = createSupabaseBrowser();
@@ -23,22 +33,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
       const { data: profile } = await supa
         .from("profiles")
-        .select("is_admin")
+        .select("is_admin, is_admin_limitado")
         .eq("id", auth.user.id)
         .single();
       if (!profile?.is_admin) {
         router.replace("/dashboard");
         return;
       }
+      const isLimited = !!profile?.is_admin_limitado;
+      // Un admin limitat que intenta entrar a una secció restringida
+      // (ja sigui escrivint l'URL o seguint un enllaç antic) el fem
+      // tornar a l'arrel del panell.
+      if (isLimited && RESTRICTED_FOR_LIMITED.has(pathname)) {
+        router.replace("/admin");
+        return;
+      }
+      setLimited(isLimited);
       setOk(true);
       setLoading(false);
     })();
-  }, [router]);
+  }, [router, pathname]);
 
   if (loading) return <div className="py-20 text-center text-oliva-600">{t.common.loading}</div>;
   if (!ok) return null;
 
-  const links = [
+  const allLinks = [
     { href: "/admin", label: t.admin.title, icon: "🏠" },
     { href: "/admin/qr", label: t.admin.generateQr, icon: "🎫" },
     { href: "/admin/clients", label: t.admin.clients, icon: "👥" },
@@ -49,6 +68,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/newsletter", label: t.admin.newsletter, icon: "📧" },
     { href: "/admin/stats", label: t.admin.stats, icon: "📊" },
   ];
+  const links = limited
+    ? allLinks.filter((l) => !RESTRICTED_FOR_LIMITED.has(l.href))
+    : allLinks;
 
   return (
     <div className="py-4">

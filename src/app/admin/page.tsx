@@ -1,12 +1,35 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n } from "@/i18n/provider";
+
+const RESTRICTED_FOR_LIMITED = new Set<string>([
+  "/admin/clients",
+  "/admin/news",
+  "/admin/newsletter",
+]);
 
 export default function AdminHome() {
   const { t } = useI18n();
+  const [limited, setLimited] = useState(false);
 
-  const cards = [
+  useEffect(() => {
+    const supa = createSupabaseBrowser();
+    (async () => {
+      const { data: auth } = await supa.auth.getUser();
+      if (!auth.user) return;
+      const { data: profile } = await supa
+        .from("profiles")
+        .select("is_admin_limitado")
+        .eq("id", auth.user.id)
+        .single();
+      setLimited(!!profile?.is_admin_limitado);
+    })();
+  }, []);
+
+  const allCards = [
     { href: "/admin/qr", label: t.admin.generateQr, icon: "🎫", desc: "Crear códigos QR para premiar consumos" },
     { href: "/admin/clients", label: t.admin.clients, icon: "👥", desc: "Gestionar la base de clientes" },
     { href: "/admin/redemptions", label: t.admin.redemptions, icon: "🎁", desc: "Validar canjes de premios" },
@@ -14,6 +37,9 @@ export default function AdminHome() {
     { href: "/admin/newsletter", label: t.admin.newsletter, icon: "📧", desc: "Enviar emails masivos a clientes" },
     { href: "/admin/stats", label: t.admin.stats, icon: "📊", desc: "Ver estadísticas del programa" },
   ];
+  const cards = limited
+    ? allCards.filter((c) => !RESTRICTED_FOR_LIMITED.has(c.href))
+    : allCards;
 
   return (
     <div>

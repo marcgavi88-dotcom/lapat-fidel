@@ -17,11 +17,14 @@ export async function POST(req: NextRequest) {
 
   const { data: prof } = await supa
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, is_admin_limitado")
     .eq("id", auth.user.id)
     .single();
   if (!prof?.is_admin) {
     return NextResponse.json({ ok: false, error: "not_admin" }, { status: 403 });
+  }
+  if (prof.is_admin_limitado) {
+    return NextResponse.json({ ok: false, error: "admin_limitat" }, { status: 403 });
   }
 
   let body: { user_id?: string; delta?: number; motivo?: string };
