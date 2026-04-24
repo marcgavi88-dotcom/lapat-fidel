@@ -367,10 +367,17 @@ export const es: Translations = {
     qrCroquetas: "Croquetas consumidas",
     qrGenerate: "Generar QR",
     qrPoints: "Puntos asignados",
-    qrPrint: "Imprimir ticket",
+    qrPrint: "Imprimir (navegador)",
+    qrPrintThermal: "Imprimir en la Epson TM-m30III",
+    qrPrintThermalHelp:
+      "Imprime directamente en la impresora térmica (IP 192.168.1.147). Requiere que el iPad haya aceptado el certificado: si es la primera vez, abre https://192.168.1.147 en Safari y toca 'Visitar este sitio web' en el aviso.",
+    qrPrintSuccess: "✓ Ticket enviado a la impresora.",
+    qrPrintNetworkError:
+      "No se ha podido conectar con la impresora. Comprueba que el iPad está en la misma Wi-Fi y que has aceptado el certificado visitando https://192.168.1.147 en Safari.",
+    qrPrintPrinterError: "La impresora ha devuelto un error",
     qrDownload: "Descargar ticket",
     qrShareToPhotos: "📲 Guardar en Fotos",
-    qrPrintHelp: "Para imprimir con la Munbyn: guarda la imagen en Fotos, abre la app Munbyn Print → Imprimir foto → elige el ticket.",
+    qrPrintHelp: "Si la impresora no responde: guarda en Fotos o descarga la imagen e imprímela manualmente.",
     qrScanInstructions: "Escanea este QR con la cámara del móvil",
     qrValidFor: "Vale por",
 

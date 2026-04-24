@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useI18n } from "@/i18n/provider";
+import { buildEposXml, sendToEpsonPrinter } from "@/lib/epos-print";
+
+const EPSON_PRINTER_IP = "192.168.1.147";
 
 interface QrGenerado {
   id: string;
@@ -231,7 +234,48 @@ export default function AdminQrPage() {
     }
   };
 
-  const handlePrint = () => {
+  const [printing, setPrinting] = useState(false);
+  const [printStatus, setPrintStatus] = useState<string | null>(null);
+
+  const handlePrintThermal = async () => {
+    if (!ultimoQr || !qrImage) return;
+    setPrinting(true);
+    setPrintStatus(null);
+    try {
+      const xml = await buildEposXml({
+        qrDataUrl: qrImage,
+        titleLine: "L'APAT DEL PRAT",
+        subtitleLine: "Arrossos i cuina mediterrania",
+        pointsLine: `${t.admin.qrValidFor.toUpperCase()} ${ultimoQr.puntos} ${t.dashboard.points.toUpperCase()}`,
+        amountLine: `Consumicio: ${ultimoQr.importe_euros.toFixed(2)} EUR`,
+        croquetasLine:
+          ultimoQr.croquetas > 0 ? `+${ultimoQr.croquetas} croquetes` : undefined,
+        fallbackUrlLine: `${siteHostname}/qr/${ultimoQr.codigo}`,
+        validUntilLine: `Valid fins: ${new Date(ultimoQr.expira_at).toLocaleString("ca-ES")}`,
+        footerLine: "Gracies! / Gracias!",
+      });
+      const res = await sendToEpsonPrinter(EPSON_PRINTER_IP, xml, {
+        useHttps: true,
+      });
+      if (res.success) {
+        setPrintStatus("ok");
+      } else {
+        console.error("Epson print failed:", res);
+        setPrintStatus(
+          res.code === "NETWORK_ERROR"
+            ? "network"
+            : `err:${res.code ?? "unknown"}`,
+        );
+      }
+    } catch (e) {
+      console.error(e);
+      setPrintStatus("network");
+    } finally {
+      setPrinting(false);
+    }
+  };
+
+  const handlePrintBrowser = () => {
     window.print();
   };
 
@@ -339,19 +383,45 @@ export default function AdminQrPage() {
         {/* Preview del ticket (estilo impresora térmica) */}
         {ultimoQr && qrImage && (
           <div>
-            <div className="mb-2 flex flex-col gap-2 no-print sm:flex-row">
-              <button onClick={handleShareTicket} className="btn-primary flex-1">
-                {t.admin.qrShareToPhotos}
+            <div className="mb-2 flex flex-col gap-2 no-print">
+              <button
+                onClick={handlePrintThermal}
+                disabled={printing}
+                className="btn-primary w-full"
+              >
+                {printing
+                  ? t.common.loading
+                  : `🖨️ ${t.admin.qrPrintThermal}`}
               </button>
-              <button onClick={handleDownloadTicket} className="btn-secondary flex-1">
-                ⬇️ {t.admin.qrDownload}
-              </button>
-              <button onClick={handlePrint} className="btn-secondary flex-1">
-                🖨️ {t.admin.qrPrint}
-              </button>
+              {printStatus === "ok" && (
+                <p className="text-xs text-oliva-700">
+                  {t.admin.qrPrintSuccess}
+                </p>
+              )}
+              {printStatus === "network" && (
+                <p className="text-xs text-terracota-700">
+                  {t.admin.qrPrintNetworkError}
+                </p>
+              )}
+              {printStatus && printStatus.startsWith("err:") && (
+                <p className="text-xs text-terracota-700">
+                  {t.admin.qrPrintPrinterError}: {printStatus.slice(4)}
+                </p>
+              )}
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button onClick={handleShareTicket} className="btn-secondary flex-1">
+                  {t.admin.qrShareToPhotos}
+                </button>
+                <button onClick={handleDownloadTicket} className="btn-secondary flex-1">
+                  ⬇️ {t.admin.qrDownload}
+                </button>
+                <button onClick={handlePrintBrowser} className="btn-secondary flex-1">
+                  🖨️ {t.admin.qrPrint}
+                </button>
+              </div>
             </div>
             <p className="mb-3 text-xs leading-snug text-oliva-600 no-print">
-              {t.admin.qrPrintHelp}
+              {t.admin.qrPrintThermalHelp}
             </p>
 
             <div id="ticket-print" className="ticket-preview">

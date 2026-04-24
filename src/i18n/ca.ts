@@ -379,10 +379,17 @@ export const ca = {
     qrCroquetas: "Croquetes consumides",
     qrGenerate: "Generar QR",
     qrPoints: "Punts assignats",
-    qrPrint: "Imprimir tiquet",
+    qrPrint: "Imprimir (navegador)",
+    qrPrintThermal: "Imprimir a l'Epson TM-m30III",
+    qrPrintThermalHelp:
+      "Imprimeix directament a la impressora tèrmica (IP 192.168.1.147). Requereix que l'iPad hagi acceptat el certificat: si és la primera vegada, obre https://192.168.1.147 a Safari i toca 'Visitar aquest lloc web' a l'avís.",
+    qrPrintSuccess: "✓ Tiquet enviat a la impressora.",
+    qrPrintNetworkError:
+      "No s'ha pogut connectar amb la impressora. Comprova que l'iPad està a la mateixa Wi-Fi i que has acceptat el certificat visitant https://192.168.1.147 a Safari.",
+    qrPrintPrinterError: "La impressora ha retornat un error",
     qrDownload: "Descarregar tiquet",
     qrShareToPhotos: "📲 Desar a Fotos",
-    qrPrintHelp: "Per imprimir amb la Munbyn: desa la imatge a Fotos, obre l'app Munbyn Print → Imprimir foto → tria el tiquet.",
+    qrPrintHelp: "Si la impressora no respon: desa a Fotos o descarrega la imatge i imprimeix-la manualment.",
     qrScanInstructions: "Escaneja aquest QR amb la càmera del mòbil",
     qrValidFor: "Val per",
 
