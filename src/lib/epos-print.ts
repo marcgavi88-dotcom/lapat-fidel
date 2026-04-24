@@ -99,13 +99,19 @@ export async function buildEposXml(t: EposTicketData): Promise<string> {
   // QR target width in dots. 80 mm printhead = 576 dots total.
   const qr = await dataUrlToEposRaster(t.qrDataUrl, 400);
 
+  // Separator strings.
+  // Font A (default) = 48 chars/line on 80mm at width=1.
+  // Font B (smaller) = 64 chars/line on 80mm at width=1.
+  const DIV_A = "- - - - - - - - - - - - - - - -"; // 31 chars, font A w1
+  const DIV_B = "--------------------------------"; // 32 chars, font B w1
+
+  // IMPORTANT: ePOS-Print <text> attributes are STATEFUL and persist across
+  // elements until reset. Each <text> below sets width/height/em explicitly
+  // so there's no bleed-over from the previous line.
   const croq = t.croquetasLine
     ? [
-        '      <text align="center" em="true" dw="true" dh="true">' +
-          escXml(t.croquetasLine) +
-          "&#10;</text>",
-        '      <text align="center">Tirades a la Ruleta Croquetera&#10;</text>',
-        "      <feed/>",
+        `      <text align="center" width="2" height="1" em="true">${escXml(t.croquetasLine)}&#10;</text>`,
+        `      <text align="center" width="1" height="1" em="false">Tirades a la Ruleta Croquetera&#10;</text>`,
       ].join("\n")
     : "";
 
@@ -113,25 +119,25 @@ export async function buildEposXml(t: EposTicketData): Promise<string> {
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
   <s:Body>
     <epos-print ${NS}>
-      <text align="center" em="true" dw="true" dh="true">${escXml(t.titleLine)}&#10;</text>
-      <text align="center">${escXml(t.subtitleLine)}&#10;</text>
+      <text align="center" width="2" height="2" em="true">${escXml(t.titleLine)}&#10;</text>
+      <text align="center" width="1" height="1" em="false">${escXml(t.subtitleLine)}&#10;</text>
       <feed/>
-      <text align="center">--------------------------------&#10;</text>
+      <text align="center">${DIV_A}&#10;</text>
       <image width="${qr.width}" height="${qr.height}" align="center" color="color_1" mode="mono">${qr.rasterB64}</image>
       <text align="center" em="true">Escaneja amb la camera&#10;</text>
-      <text align="center">Acumula punts i premis&#10;</text>
+      <text align="center" em="false">Acumula punts i premis&#10;</text>
       <feed/>
-      <text align="center">--------------------------------&#10;</text>
-      <text align="center" em="true" dw="true" dh="true">${escXml(t.pointsLine)}&#10;</text>
-      <text align="center">${escXml(t.amountLine)}&#10;</text>
+      <text align="center">${DIV_A}&#10;</text>
+      <text align="center" width="2" height="2" em="true">${escXml(t.pointsLine)}&#10;</text>
+      <text align="center" width="1" height="1" em="false">${escXml(t.amountLine)}&#10;</text>
 ${croq}
-      <text align="center">--------------------------------&#10;</text>
-      <text align="center">Si la camera no funciona:&#10;</text>
-      <text align="center" em="true">${escXml(t.fallbackUrlLine)}&#10;</text>
       <feed/>
-      <text align="center">${escXml(t.validUntilLine)}&#10;</text>
-      <text align="center">--------------------------------&#10;</text>
-      <text align="center" em="true" dw="true">${escXml(t.footerLine)}&#10;</text>
+      <text align="center" font="font_b">${DIV_B}&#10;</text>
+      <text align="center" font="font_b">Si la camera no funciona:&#10;</text>
+      <text align="center" font="font_b" em="true">${escXml(t.fallbackUrlLine)}&#10;</text>
+      <text align="center" font="font_b" em="false">${escXml(t.validUntilLine)}&#10;</text>
+      <text align="center" font="font_a">${DIV_A}&#10;</text>
+      <text align="center" width="1" height="2" em="true">${escXml(t.footerLine)}&#10;</text>
       <feed line="3"/>
       <cut type="feed"/>
     </epos-print>

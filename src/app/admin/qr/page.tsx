@@ -251,7 +251,7 @@ export default function AdminQrPage() {
         croquetasLine:
           ultimoQr.croquetas > 0 ? `+${ultimoQr.croquetas} croquetes` : undefined,
         fallbackUrlLine: `${siteHostname}/qr/${ultimoQr.codigo}`,
-        validUntilLine: `Valid fins: ${new Date(ultimoQr.expira_at).toLocaleString("ca-ES")}`,
+        validUntilLine: `Valid fins: ${new Date(ultimoQr.expira_at).toLocaleString("ca-ES", { dateStyle: "short", timeStyle: "short" })}`,
         footerLine: "Gracies! / Gracias!",
       });
       const res = await sendToEpsonPrinter(EPSON_PRINTER_IP, xml, {
