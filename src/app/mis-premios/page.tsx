@@ -58,6 +58,26 @@ export default function MisPremiosPage() {
         <p className="mt-1 text-oliva-700">{t.misPremios.subtitle}</p>
       </div>
 
+      {/* Info: com bescanviar (flux cambrer) */}
+      <div className="rounded-2xl border border-terracota-200 bg-crema-50 p-5">
+        <h3 className="serif text-lg text-terracota-800">{t.misPremios.waiterFlowTitle}</h3>
+        <ol className="mt-3 space-y-2.5">
+          <li className="flex items-start gap-3">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-terracota-600 text-sm font-semibold text-white">
+              1
+            </span>
+            <span className="pt-0.5 text-sm text-oliva-800">{t.misPremios.waiterFlowStep1}</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-terracota-600 text-sm font-semibold text-white">
+              2
+            </span>
+            <span className="pt-0.5 text-sm text-oliva-800">{t.misPremios.waiterFlowStep2}</span>
+          </li>
+        </ol>
+        <p className="mt-3 text-xs text-oliva-600">{t.misPremios.waiterFlowFooter}</p>
+      </div>
+
       {/* Codis actius */}
       <section className="space-y-3">
         <h2 className="serif text-xl text-terracota-800">
