@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
@@ -34,35 +34,11 @@ export default function PromoLanding() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ codigo_canje: string } | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(
-          `/api/promo/info?codigo=${encodeURIComponent(codigo)}`,
-        );
-        const json = await res.json();
-        if (!res.ok || !json.ok) {
-          setError(json.error || "promo_no_existe");
-          setLoading(false);
-          return;
-        }
-        setPromo(json.promo);
-        setPremio(json.premio);
+  // Guard per evitar que l'auto-claim s'executi més d'una vegada
+  // (per exemple, si React re-renderitza o l'efecte es torna a disparar).
+  const autoClaimAttempted = useRef(false);
 
-        const supa = createSupabaseBrowser();
-        const { data } = await supa.auth.getUser();
-        if (data.user)
-          setUser({ id: data.user.id, email: data.user.email ?? "" });
-      } catch {
-        setError("network_error");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [codigo]);
-
-  const handleClaim = async () => {
-    if (!user || !promo) return;
+  const claim = async () => {
     setClaiming(true);
     setError(null);
     try {
@@ -82,6 +58,50 @@ export default function PromoLanding() {
     } finally {
       setClaiming(false);
     }
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/promo/info?codigo=${encodeURIComponent(codigo)}`,
+        );
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          setError(json.error || "promo_no_existe");
+          return;
+        }
+        setPromo(json.promo);
+        setPremio(json.premio);
+
+        const supa = createSupabaseBrowser();
+        const { data } = await supa.auth.getUser();
+        if (data.user) {
+          setUser({ id: data.user.id, email: data.user.email ?? "" });
+
+          // Auto-claim: si l'usuari ja està logat (vé del registre o ja
+          // tenia sessió), reclamem el premi automàticament. La RPC és
+          // idempotent, així que si ja l'havia reclamat retorna el codi
+          // existent — mai genera duplicats. Mantenim loading=true durant
+          // el reclamo per evitar que la card del premi parpellegi abans
+          // d'arribar a l'estat d'èxit.
+          if (!autoClaimAttempted.current) {
+            autoClaimAttempted.current = true;
+            await claim();
+          }
+        }
+      } catch {
+        setError("network_error");
+      } finally {
+        setLoading(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codigo]);
+
+  const handleClaim = () => {
+    if (!user || !promo) return;
+    void claim();
   };
 
   if (loading) {
