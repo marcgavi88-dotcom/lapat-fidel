@@ -305,6 +305,24 @@ export const es: Translations = {
     sharedBadge: "Compartido · {remaining}/{total} escaneos restantes",
   },
 
+  promo: {
+    title: "¡Tienes un regalo esperándote!",
+    subtitleGuest: "Regístrate gratis en el club fiel y reclama tu regalo",
+    subtitleLoggedIn: "Reclama tu regalo ahora",
+    claim: "Reclamar regalo",
+    claimAndRegister: "Registrarme y reclamar",
+    alreadyAccount: "Ya tengo cuenta",
+    expiresOn: "Válido hasta {date}",
+    successTitle: "¡Regalo reclamado!",
+    successHint: "Muestra este código en el restaurante para disfrutarlo",
+    seeMyPrizes: "Ver mis premios",
+    errorNotFound: "Este código promocional no existe",
+    errorExpired: "Esta promoción ha caducado",
+    errorInactive: "Esta promoción ya no está activa",
+    errorAlreadyClaimed: "Ya has reclamado esta promoción anteriormente",
+    errorGeneric: "No se ha podido reclamar la promoción",
+  },
+
   rewards: {
     title: "Premios disponibles",
     subtitle: "Canjea tus puntos por estos premios",

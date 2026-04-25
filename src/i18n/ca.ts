@@ -312,6 +312,25 @@ export const ca = {
     sharedBadge: "Compartit · {remaining}/{total} escanejos restants",
   },
 
+  // Promos genèriques (mailing, codis promocionals)
+  promo: {
+    title: "Tens un regal esperant-te!",
+    subtitleGuest: "Registra't gratis al club fidel i reclama el teu regal",
+    subtitleLoggedIn: "Reclama el teu regal ara",
+    claim: "Reclamar regal",
+    claimAndRegister: "Registrar-me i reclamar",
+    alreadyAccount: "Ja tinc compte",
+    expiresOn: "Vàlid fins a {date}",
+    successTitle: "Regal reclamat!",
+    successHint: "Mostra aquest codi al restaurant per gaudir-lo",
+    seeMyPrizes: "Veure els meus premis",
+    errorNotFound: "Aquest codi promocional no existeix",
+    errorExpired: "Aquesta promoció ha caducat",
+    errorInactive: "Aquesta promoció ja no està activa",
+    errorAlreadyClaimed: "Ja has reclamat aquesta promoció anteriorment",
+    errorGeneric: "No s'ha pogut reclamar la promoció",
+  },
+
   // Premios
   rewards: {
     title: "Premis disponibles",
