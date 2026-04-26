@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
   if (croquetasNum > 999) croquetasNum = 999;
 
   // Punts i croquetes PER ESCANEIG (cada comensal s'endú el seu tall).
-  // 2.5 punts per euro, redondeat. Amb N comensals, cadascú rep round((importe/N) * 2.5).
+  // 2 punts per euro, redondeat. Amb N comensals, cadascú rep round((importe/N) * 2).
   const importePerEscaneig = importeNum / comensalesNum;
-  const puntosPerEscaneig = Math.round(importePerEscaneig * 2.5);
+  const puntosPerEscaneig = Math.round(importePerEscaneig * 2);
   const croquetasPerEscaneig = Math.floor(croquetasNum / comensalesNum);
 
   const codigo = generarCodigo();

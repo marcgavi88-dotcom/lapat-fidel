@@ -3,7 +3,7 @@
 Web app completa de fidelización de clientes con:
 
 - Registro de clientes bilingüe (català/castellano)
-- Sistema de puntos unificado (2,5 puntos por euro)
+- Sistema de puntos unificado (2 puntos por euro)
 - QR de un solo uso con impresión en ticket térmico
 - Tarjeta de sellos para menús del día
 - Ruleta mensual con premios

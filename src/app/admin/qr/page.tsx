@@ -349,9 +349,9 @@ export default function AdminQrPage() {
   };
 
   const comensalesPreview = Math.max(1, Math.min(50, Math.floor(Number(comensales) || 1)));
-  const puntosPreviewTotal = importe ? Math.round(Number(importe) * 2.5) : 0;
+  const puntosPreviewTotal = importe ? Math.round(Number(importe) * 2) : 0;
   const puntosPreview = importe
-    ? Math.round((Number(importe) / comensalesPreview) * 2.5)
+    ? Math.round((Number(importe) / comensalesPreview) * 2)
     : 0;
   const qrUrl = ultimoQr ? `${siteUrl}/qr/${ultimoQr.codigo}` : "";
   const siteHostname = siteUrl.replace(/^https?:\/\//, "");
@@ -431,7 +431,7 @@ export default function AdminQrPage() {
                 placeholder="23.50"
               />
               <p className="mt-1 text-sm text-oliva-600">
-                = <strong>{puntosPreviewTotal} {t.dashboard.points}</strong> (2,5 × €)
+                = <strong>{puntosPreviewTotal} {t.dashboard.points}</strong> (2 × €)
               </p>
             </div>
 
